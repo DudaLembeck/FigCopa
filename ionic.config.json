@@ -1,0 +1,7 @@
+{
+  "name": "FigCopa",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "vue-vite"
+}
