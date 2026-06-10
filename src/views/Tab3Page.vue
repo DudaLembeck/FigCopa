@@ -13,43 +13,41 @@
       <ion-card>
         <ion-card-header>
           <ion-card-title>Meu Álbum</ion-card-title>
-          <ion-card-subtitle>Figurinhas Coletadas:</ion-card-subtitle>
-            <ion-card
-        v-for="figura in figurasColetadas"
-        :key="figura.id"
-      >
-        <ion-card-header>
-          <ion-card-title>
-            {{ figura.jogador }}
-          </ion-card-title>
+         </ion-card-header>
+         <ion-card-content>
 
-          <ion-card-subtitle>
-            {{ figura.posicao }}
-          </ion-card-subtitle>
+       <ion-card-title > Figurinhas Coletadas: </ion-card-title>
 
-          
-          <ion-text> Status:</ion-text>
-           <ion-label color="primary"> {{ figura.status }}  </ion-label>
-       
-           
-        </ion-card-header>
+        <StickerCard
+          v-for="figura in figurasColetadas"
+          :key="figura.id"
+          :figura="figura"
+        />
 
-        <ion-card-content>
-          <ion-img :src="figura.img"></ion-img>
-        </ion-card-content>
-      </ion-card>
-        </ion-card-header>
-      </ion-card>
+        <ion-card-title> Figurinhas Pendentes:</ion-card-title>
 
-    </ion-content>
-  </ion-page>
+        <StickerCard
+          v-for="figura in figurasPendentes"
+          :key="figura.id"
+          :figura="figura"
+        />
+         </ion-card-content>
+       </ion-card>
+
+        </ion-content>
+         </ion-page>
 </template>
 
 <script setup lang="ts">
-import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent } from '@ionic/vue';
+import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent,  IonCard, IonCardHeader, IonCardTitle ,IonCardContent } from '@ionic/vue';
 import data from '@/data/data.json'
+import StickerCard from '@/components/StickerCard.vue'
 
 const figurasColetadas = data.figuras.filter(
   figura => figura.status === "Coletada"
+);
+
+const figurasPendentes = data.figuras.filter(
+  figura => figura.status === "Pendente"
 );
 </script>

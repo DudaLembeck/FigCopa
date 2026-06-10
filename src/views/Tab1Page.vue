@@ -11,9 +11,10 @@
       <ion-card>
         <ion-card-header>
           <ion-card-title>Total de Figurinhas:</ion-card-title>
-          <p>aaa</p>
+          <p>{{ totalFigurinhas }}</p>
+    
          <ion-card-title>Figurinhas Coletadas:</ion-card-title>
-          <p>aaa</p>
+          <p>{{ totalColetadas }}</p>
         </ion-card-header>
 
       </ion-card>
@@ -23,4 +24,10 @@
 
 <script setup lang="ts">
 import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonCard, IonCardHeader, IonCardTitle } from '@ionic/vue'
+
+import { ContarFig } from '@/composables/useCount'
+import { ContarColetadas } from '@/composables/useCount'
+
+const totalFigurinhas = ContarFig()
+const totalColetadas = ContarColetadas()
 </script>

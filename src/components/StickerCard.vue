@@ -1,52 +1,42 @@
 <template>
-
-<ion-card>
-
+  <ion-card>
     <ion-card-header>
+      <ion-card-title>
+        {{ figura.jogador }}
+      </ion-card-title>
 
-        <ion-card-title>
-            {{ figura.jogador }}
-        </ion-card-title>
-
-        <ion-card-subtitle>
-            {{ figura.posicao }}
-        </ion-card-subtitle>
-
+      <ion-card-subtitle>
+        {{ figura.posicao }}
+      </ion-card-subtitle>
     </ion-card-header>
 
     <ion-card-content>
+      <ion-img :src="figura.img"></ion-img>
 
-        <ion-img :src="figura.img"></ion-img>
-
-        <ion-label>
-
-            Status:
-            {{ figura.status ? 'Coletada' : 'Pendente'}}
-
-        </ion-label>
-
-        <ion-button
-        expand="block"
-        @click="$emit('alterar',figura.id)"
-        >
-
-            Alterar Status
-
-        </ion-button>
+      <ion-label>
+        Status:
+        {{ figura.status }}
+      </ion-label>
 
     </ion-card-content>
-
-</ion-card>
-
+  </ion-card>
 </template>
 
 <script setup lang="ts">
-import { IonPage, IonContent, IonItem, IonInput, IonButtons, IonBackButton, IonButton, IonToolbar, IonHeader } from '@ionic/vue';
+import {
+  IonCard,
+  IonCardHeader,
+  IonCardTitle,
+  IonCardSubtitle,
+  IonCardContent,
+  IonImg,
+  IonLabel
+} from '@ionic/vue'
 
-defineProps({
-    figura:Object
-})
+import { Figura } from '@/composables/useAlbum'
 
-defineEmits(['alterar'])
+defineProps<{
+  figura: Figura
+}>()
 
 </script>
