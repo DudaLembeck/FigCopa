@@ -10,13 +10,14 @@
       </ion-card-subtitle>
     </ion-card-header>
 
-    <ion-card-content>
-      <ion-img :src="figura.img"></ion-img>
-
+    <ion-card-content>  
       <ion-label>
         Status:
         {{ figura.status }}
       </ion-label>
+      <ion-img :src="figura.img"></ion-img>
+
+    
 
     </ion-card-content>
   </ion-card>

@@ -11,14 +11,14 @@
           <ion-title size="large">Tab 2</ion-title>
         </ion-toolbar>
       </ion-header>
-
+      <h1>TODAS AS FIGURINHAS</h1>
       
 
         <StickerCard
-  v-for="figura in figuras"
-  :key="figura.id"
-  :figura="figura"
-/>
+          v-for="figura in figuras"
+          :key="figura.id"
+          :figura="figura"
+        />
       
     </ion-content>
   </ion-page>
@@ -34,3 +34,20 @@ const { figuras } = useAlbum()
 
 
 </script>
+<style scoped>
+
+.custom-input {
+  margin-bottom: 18px;
+  --border-radius: 8px;
+  --highlight-color-focused: #3880ff; 
+}
+
+h1 {
+  text-align: center;
+  margin-bottom: 24px;
+  color: #ffffff;
+  font-weight: 600;
+}
+
+
+</style>

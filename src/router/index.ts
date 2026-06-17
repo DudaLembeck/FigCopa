@@ -15,6 +15,10 @@ const routes: Array<RouteRecordRaw> = [
     path: '/cadastro',
     component: () => import('@/views/CadastroPage.vue')
   },
+    {
+    path: '/recuperar',
+    component: () => import('@/views/RecuperarPage.vue')
+  },
   {
     path: '/tabs/',
     component: TabsPage,
@@ -48,17 +52,16 @@ const router = createRouter({
 router.beforeEach((to, from, next) => {
   const logado = localStorage.getItem('logado');
 
-
-  if (to.path === '/login' || to.path === '/cadastro') {
+  if (
+    to.path === '/login' ||
+    to.path === '/cadastro' ||
+    to.path === '/recuperar'
+  ) {
     next();
   }
-
-
   else if (logado === 'true') {
     next();
   }
-
-
   else {
     next('/login');
   }

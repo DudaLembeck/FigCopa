@@ -22,7 +22,8 @@
       
       <ion-button expand="block" @click="entrar()">Entrar</ion-button>
         <h4>Não possui uma conta?</h4>
-        <RouterLink to="/cadastro">Cadastrar-se</RouterLink>
+        <RouterLink to="/cadastro">Cadastrar-se</RouterLink><br><br>
+         <RouterLink to="/recuperar">Recuperar Senha</RouterLink>
      
     </ion-content>
    
@@ -32,7 +33,7 @@
 <script setup lang="ts">
 import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonItem, IonInput, IonButton } from '@ionic/vue'
 import { ref } from 'vue';
-import { useRouter } from 'vue-router';
+import { useRouter, RouterLink } from 'vue-router';
 
 const router = useRouter();
 
