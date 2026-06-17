@@ -54,7 +54,7 @@ export async function findContatoByEmail(email: string) {
 
 export async function addUsuario (nome:string, login:string, senha:string ) {
     const query = 'INSERT INTO usuarios (nome, login, senha) VALUES (?,?,?);'
-    await db.run({ statement: query, values: [nome, login, senha] })
+    await db.run(query, [nome, login, senha])
 }
 
 export async function realizarLogin (login:string, senha:string ) {
