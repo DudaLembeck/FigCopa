@@ -30,6 +30,13 @@ async function ensureDatabase() {
             login TEXT NOT NULL UNIQUE,
             senha TEXT
         )`);
+
+        await db.execute(`CREATE TABLE IF NOT EXISTS figurinhas (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            numero TEXT NOT NULL UNIQUE,
+            nome TEXT NOT NULL,
+            coletada INTEGER DEFAULT 0 
+        );`);
  
         initialized = true;
 
