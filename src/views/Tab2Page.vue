@@ -12,7 +12,6 @@
         </ion-toolbar>
       </ion-header>
       <h1>TODAS AS FIGURINHAS</h1>
-      
 
         <StickerCard
           v-for="figura in figuras"
