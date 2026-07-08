@@ -39,15 +39,22 @@
 </template>
 
 <script setup lang="ts">
+import { computed, onMounted } from 'vue';
 import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent,  IonCard, IonCardHeader, IonCardTitle ,IonCardContent } from '@ionic/vue';
-import data from '@/data/data.json'
 import StickerCard from '@/components/StickerCard.vue'
+import { useAlbum } from '@/composables/useAlbum'
 
-const figurasColetadas = data.figuras.filter(
-  figura => figura.status === "Coletada"
+const { figuras, carregarFigurinhas } = useAlbum()
+
+onMounted(async () => {
+  await carregarFigurinhas()
+})
+
+const figurasColetadas = computed(() =>
+  figuras.value.filter(figura => figura.coletada === 1)
 );
 
-const figurasPendentes = data.figuras.filter(
-  figura => figura.status === "Pendente"
+const figurasPendentes = computed(() =>
+  figuras.value.filter(figura => figura.coletada !== 1)
 );
 </script>

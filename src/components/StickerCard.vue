@@ -2,23 +2,27 @@
   <ion-card>
     <ion-card-header>
       <ion-card-title>
-        {{ figura.jogador }}
+        {{ figura.nome }}
       </ion-card-title>
-
-      <ion-card-subtitle>
-        {{ figura.posicao }}
-      </ion-card-subtitle>
     </ion-card-header>
 
-    <ion-card-content>  
-      <ion-label>
-        Status:
-        {{ figura.status }}
-      </ion-label>
+    <ion-card-content>
       <ion-img :src="figura.img"></ion-img>
 
-    
+      <ion-label>
+        Status:
+        <ion-badge :color="figura.coletada === 1 ? 'success' : 'medium'">
+          {{ figura.coletada === 1 ? 'Coletada' : 'Pendente' }}
+        </ion-badge>
+      </ion-label>
 
+      <ion-button
+        expand="block"
+        :color="figura.coletada === 1 ? 'medium' : 'success'"
+        @click="alternarStatus"
+      >
+        {{ figura.coletada === 1 ? 'Marcar como pendente' : 'Marcar como coletada' }}
+      </ion-button>
     </ion-card-content>
   </ion-card>
 </template>
@@ -28,16 +32,22 @@ import {
   IonCard,
   IonCardHeader,
   IonCardTitle,
-  IonCardSubtitle,
   IonCardContent,
   IonImg,
-  IonLabel
+  IonLabel,
+  IonBadge,
+  IonButton
 } from '@ionic/vue'
 
-import { Figura } from '@/composables/useAlbum'
+import { Figura, useAlbum } from '@/composables/useAlbum'
 
-defineProps<{
+const props = defineProps<{
   figura: Figura
 }>()
 
+const { alterarStatus } = useAlbum()
+
+async function alternarStatus() {
+  await alterarStatus(props.figura.id, props.figura.coletada !== 1)
+}
 </script>

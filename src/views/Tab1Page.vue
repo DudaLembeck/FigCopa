@@ -23,11 +23,18 @@
 </template>
 
 <script setup lang="ts">
+import { onMounted } from 'vue'
 import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonCard, IonCardHeader, IonCardTitle } from '@ionic/vue'
 
-import { ContarFig } from '@/composables/useCount'
-import { ContarColetadas } from '@/composables/useCount'
+import { ContarFig, ContarColetadas } from '@/composables/useCount'
+import { useAlbum } from '@/composables/useAlbum'
 
 const totalFigurinhas = ContarFig()
 const totalColetadas = ContarColetadas()
+
+const { carregarFigurinhas } = useAlbum()
+
+onMounted(async () => {
+  await carregarFigurinhas()
+})
 </script>

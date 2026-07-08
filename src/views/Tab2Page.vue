@@ -18,19 +18,23 @@
           :key="figura.id"
           :figura="figura"
         />
-      
+
     </ion-content>
   </ion-page>
 </template>
 
 <script setup lang="ts">
+import { onMounted } from 'vue';
 import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent} from '@ionic/vue';
 import StickerCard from '@/components/StickerCard.vue'
 import { useAlbum } from '@/composables/useAlbum'
 
 
-const { figuras } = useAlbum()
+const { figuras, carregarFigurinhas } = useAlbum()
 
+onMounted(async () => {
+  await carregarFigurinhas()
+})
 
 </script>
 <style scoped>

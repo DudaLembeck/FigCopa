@@ -1,18 +1,32 @@
-import { ref } from 'vue'
-import data from '@/data/data.json'
+import { ref } from 'vue';
+import { listarFigurinhas, atualizarStatusFigurinha } from '@/services/database';
 
 export interface Figura {
   id: number
-  jogador: string
-  posicao: string
+  nome: string
   img: string
-  status: string
+  coletada: number 
 }
 
-const figuras = ref<Figura[]>(data.figuras)
+const figuras = ref<Figura[]>([]);
 
 export function useAlbum() {
+
+  async function carregarFigurinhas() {
+    const resultado = await listarFigurinhas();
+    figuras.value = resultado as Figura[];
+  }
+
+  async function alterarStatus(id: number, coletada: boolean) {
+    const novoStatus = coletada ? 1 : 0;
+
+    await atualizarStatusFigurinha(id, novoStatus);
+    await carregarFigurinhas();
+  }
+
   return {
-    figuras
+    figuras,
+    carregarFigurinhas,
+    alterarStatus
   }
 }
