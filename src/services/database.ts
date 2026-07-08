@@ -15,8 +15,6 @@ async function ensureDatabase() {
         db = await sqliteConnection.createConnection(dbName, false, "no-encryption", 1, false);
     }
 
-    
-
     await db.open();
 
     await db.execute(`CREATE TABLE IF NOT EXISTS usuarios (
@@ -25,7 +23,6 @@ async function ensureDatabase() {
         email TEXT NOT NULL UNIQUE,
         senha TEXT
     )`);
-
 
 
     await db.execute(`CREATE TABLE IF NOT EXISTS figurinhas (
@@ -40,32 +37,7 @@ async function ensureDatabase() {
     initialized = true;
 }
 
-export async function dropDatabase() {
-    try {
-        // 1. Força o fechamento nativo se o banco estiver instanciado
-        if (db) {
-            try {
-                await db.close();
-            } catch (e) {
-                // Ignora se já estiver fechado
-            }
-        }
 
-        // 2. Apaga o arquivo físico direto pelo componente nativo, sem passar pelo connection manager
-        await CapacitorSQLite.deleteDatabase({ database: dbName });
-
-        // 3. Reseta os estados locais para que o próximo initDatabase recrie tudo
-        db = null;
-        initialized = false;
-        
-        console.log(`Banco de dados '${dbName}' limpo com sucesso!`);
-    } catch (error) {
-        // Captura qualquer reclamação do tipo "banco não existe" e limpa os estados assim mesmo
-        console.warn('Aviso ao limpar banco (pode não existir ainda):', error);
-        db = null;
-        initialized = false;
-    }
-}
 
 async function seedFigurinhas() {
     if (!db) return;
