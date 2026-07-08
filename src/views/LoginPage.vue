@@ -33,6 +33,7 @@
 <script setup lang="ts">
 import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonItem, IonInput, IonButton } from '@ionic/vue'
 import { ref } from 'vue';
+
 import { useRouter, RouterLink } from 'vue-router';
 
 const router = useRouter();

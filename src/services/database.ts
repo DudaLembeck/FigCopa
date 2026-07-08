@@ -11,23 +11,18 @@ async function ensureDatabase() {
     if (initialized && db) {
         return;
     }
+    
  
     if (!db) {
+        
             db = await sqliteConnection.createConnection(dbName, false, "no-encryption", 1, false);
         }
  
         await db.open();
-        await db.execute(`CREATE TABLE IF NOT EXISTS contatos (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            nome TEXT NOT NULL,
-            email TEXT NOT NULL,
-            telefone TEXT
-        )`);
- 
         await db.execute(`CREATE TABLE IF NOT EXISTS usuarios (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             nome TEXT NOT NULL,
-            login TEXT NOT NULL UNIQUE,
+            email TEXT NOT NULL UNIQUE,
             senha TEXT
         )`);
 
@@ -58,60 +53,40 @@ export async function initDatabase() {
     }
 }
 
-export async function addUsuario(nome: string,login: string,senha: string) {
+export async function addUsuario(nome: string,email: string,senha: string) {
   await ensureDatabase()
-  const query ='INSERT INTO usuarios (nome, login, senha) VALUES (?, ?, ?);'
-  await getDB().run(query, [nome, login, senha])
+  const query ='INSERT INTO usuarios (nome, email, senha) VALUES (?, ?, ?);'
+  await getDB().run(query, [nome, email, senha])
 }
 
-export async function updateUsuario(id: number,nome: string, login: string, senha: string) {
+export async function updateUsuario(id: number,nome: string, email: string, senha: string) {
   await ensureDatabase()
-  const query = 'UPDATE usuarios SET nome = ?, login = ?, senha = ? WHERE id = ?;'
-  await getDB().run(query, [nome, login, senha, id])
-}
- 
-export async function addContato(nome: string,email: string,telefone: string) {
-  await ensureDatabase()
-  const query = 'INSERT INTO contatos (nome, email, telefone) VALUES (?, ?, ?);'
-  await getDB().run(query, [nome, email, telefone])
-}
- 
-export async function listContatos() {
-  await ensureDatabase()
-  const result = await getDB().query(`SELECT * FROM contatos;`)
-  return result.values || []
-}
-
-export async function deleteContatoById(id: number) {
-  await ensureDatabase()
-  const query = 'DELETE FROM contatos WHERE id = ?;'
-  return await getDB().run(query, [id])
-}
- 
-export async function updateContato(id: number,nome: string,email: string,telefone: string) {
-  await ensureDatabase()
-  const query ='UPDATE contatos SET nome = ?, email = ?, telefone = ? WHERE id = ?;'
-  await getDB().run(query, [nome, email, telefone, id])
-}
-
-export async function findContatoById(id: number) {
-  await ensureDatabase()
-  const query = `SELECT * FROM contatos WHERE id = ?;`
-  const result = await getDB().query(query, [id])
-  return result.values || []
+  const query = 'UPDATE usuarios SET nome = ?, email = ?, senha = ? WHERE id = ?;'
+  await getDB().run(query, [nome, email, senha, id])
 }
 
 export async function listUsuarios() {
     await ensureDatabase()
     const result = await getDB().query(
-    `SELECT id, nome, login FROM usuarios;`
+    `SELECT id, nome, email FROM usuarios;`
     )
     return result.values || []
 }
 
+export async function loginUsuario(email: string, senha: string) {
+  await ensureDatabase()
+  const query = `
+    SELECT * FROM usuarios
+    WHERE email = ? AND senha = ?;
+  `
+  const result = await getDB().query(query, [email, senha])
+
+  return result.values?.[0] || null
+}
+
 export async function findUsuarioById(id: number) {
     await ensureDatabase()
-    const query = `SELECT id, nome, login FROM usuarios WHERE id = ?;`
+    const query = `SELECT id, nome, email FROM usuarios WHERE id = ?;`
     const result = await getDB().query(query, [id])
     return result.values?.[0] || null
 }
