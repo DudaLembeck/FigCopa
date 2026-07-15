@@ -107,16 +107,16 @@ async function popularDadosIniciais() {
   const resJogadores = await getDb().query("SELECT COUNT(*) as total FROM jogadores");
   if (resJogadores.values?.[0]?.total === 0) {
     const jogadores = [
-      ["Neymar Jr", "Brasil", "https://img.a.transfermarkt.technology/portrait/big/68290-1697056482.jpg", "Lendária", 1],
-      ["Lionel Messi", "Argentina", "https://img.a.transfermarkt.technology/portrait/big/28003-1710080339.jpg", "Lendária", 1],
-      ["Cristiano Ronaldo", "Portugal", "https://img.a.transfermarkt.technology/portrait/big/8198-1694609670.jpg", "Lendária", 1],
-      ["Vinicius Jr", "Brasil", "https://img.a.transfermarkt.technology/portrait/big/371998-1664869583.jpg", "Épica", 0],
+      ["Neymar Jr", "Brasil", "https://i.pinimg.com/736x/eb/c5/99/ebc599e06c0a6b984fc78dc0165a9741.jpg", "Lendária", 1],
+      ["Vozinha", "Cabo Verde", "https://http2.mlstatic.com/D_NQ_NP_997909-MLB112172668126_062026-O-figurinha-avulsa-craque-vozinha-cpv2-cabo-verde-copa-2026.webp", "Lendária", 1],
+      ["Cristiano Ronaldo", "Portugal", "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTUc1Bqtu8BzvAU6SQd3mb57v5KvA3-odAfTcC3ZXEL-8UnuO0OjG7QS-k&s=10", "Lendária", 1],
+      ["Vinicius Jr", "Brasil", "https://photos.enjoei.com.br/figurinha-vini-jr-bra-20-do-album-da-copa-do-mundo-2022/1200xN/czM6Ly9waG90b3MuZW5qb2VpLmNvbS5ici9wcm9kdWN0cy8xMTk2MzExNi9lZjE1N2M2NGY5YjY2YjM3MWU4ZWQyOWI3MjhkOC5qcGc", "Épica", 0],
       ["Kylian Mbappé", "França", "https://img.a.transfermarkt.technology/portrait/big/342229-1682683695.jpg", "Lendária", 0],
-      ["Jude Bellingham", "Inglaterra", "https://img.a.transfermarkt.technology/portrait/big/581678-1693987944.jpg", "Lendária", 0],
-      ["Lamine Yamal", "Espanha", "https://img.a.transfermarkt.technology/portrait/big/937958-1699476962.jpg", "Lendária", 1],
-      ["Rodrygo", "Brasil", "https://img.a.transfermarkt.technology/portrait/big/412363-1697056493.jpg", "Rara", 0],
-      ["Alisson", "Brasil", "https://img.a.transfermarkt.technology/portrait/big/105470-1668528909.jpg", "Rara", 0],
-      ["Marquinhos", "Brasil", "https://img.a.transfermarkt.technology/portrait/big/181767-1668528947.jpg", "Comum", 0]
+      ["Jude Bellingham", "Inglaterra", "https://i.pinimg.com/originals/8b/29/ca/8b29cad5322f8d74c32e4da35fa28a63.jpg", "Lendária", 0],
+      ["Rayan", "Brasil", "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRZ7GY0VAhDQ_8OSWf_6sqF9S6qwtd2h5EKWK09-yFgvrqa_bdpJvk4DOLD&s=10", "Comum", 1],
+      ["Declan Rice", "Inglaterra", "https://http2.mlstatic.com/D_NQ_NP_646116-MLB91332852842_092025-O.webp", "Rara", 0],
+      ["Zion Suzuki", "Japão", "https://img.mypcards.com/cdn-cgi/image/h=425,fit=contain,f=auto/img/19/2517/fwc26_fwc_jpn2/fwc26_fwc_jpn2_en.jpg", "Lendária", 0],
+      ["herling haaland", "Noruega", "https://i.pinimg.com/564x/6d/c7/a1/6dc7a1fff2f04b02b261027f7b790dd1.jpg", "Comum", 0]
     ];
     for (const j of jogadores) {
       await getDb().run("INSERT INTO jogadores (nome, selecao, foto, raridade, brilhante) VALUES (?, ?, ?, ?, ?)", j);

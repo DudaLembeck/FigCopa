@@ -8,9 +8,9 @@
 
 :root {
   /* Cores Primárias */
-  --primary-color: #3880ff;
-  --primary-dark: #0a66d2;
-  --primary-light: #5a96ff;
+  --primary-color: #c038ff;
+  --primary-dark: #72187a;
+  --primary-light: #ea7eff;
 
   /* Cores Secundárias */
   --success-color: #2dd36f;
@@ -25,7 +25,7 @@
   --white-color: #ffffff;
 
   /* Gradientes */
-  --gradient-primary: linear-gradient(135deg, #3880ff 0%, #0a66d2 100%);
+  --gradient-primary: linear-gradient(135deg, #b638ff 0%, #0a66d2 100%);
   --gradient-success: linear-gradient(135deg, #2dd36f 0%, #1f9d55 100%);
   --gradient-danger: linear-gradient(135deg, #eb445a 0%, #c93642 100%);
 
