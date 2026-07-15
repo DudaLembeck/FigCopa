@@ -4,31 +4,36 @@
       "id": 1,
       "nome": "Lucas Paquetá",
       "coletada": "Coletada",
-      "img": "https://http2.mlstatic.com/D_NQ_NP_891045-MLB51298342048_082022-O.webp"
+      "img": "https://http2.mlstatic.com/D_NQ_NP_891045-MLB51298342048_082022-O.webp",
+      "tipo": "Comum"
     },
     {
       "id": 2,
       "nome": "Vinícius Júnior",
       "coletada": "Coletada",
-      "img": "https://photos.enjoei.com.br/figurinha-vini-jr-bra-20-do-album-da-copa-do-mundo-2022/1200xN/czM6Ly9waG90b3MuZW5qb2VpLmNvbS5ici9wcm9kdWN0cy8xMTk2MzExNi9lZjE1N2M2NGY5YjY2YjM1MDM3MWU4ZWQyOWI3MjhkOC5qcGc"
+      "img": "https://photos.enjoei.com.br/figurinha-vini-jr-bra-20-do-album-da-copa-do-mundo-2022/1200xN/czM6Ly9waG90b3MuZW5qb2VpLmNvbS5ici9wcm9kdWN0cy8xMTk2MzExNi9lZjE1N2M2NGY5YjY2YjM3MWU4ZWQyOWI3MjhkOC5qcGc",
+      "tipo": "Rara"
     },
     {
       "id": 3,
       "nome": "Marquinhos",
       "coletada": "Pendente",
-      "img": "https://http2.mlstatic.com/D_NQ_NP_873987-MLB54742859205_032023-O.webp"
+      "img": "https://http2.mlstatic.com/D_NQ_NP_873987-MLB54742859205_032023-O.webp",
+      "tipo": "Comum"
     },
     {
       "id": 4,
       "nome": "Alisson",
       "coletada": "Pendente",
-      "img": "https://http2.mlstatic.com/D_NQ_NP_930255-MLB54746659634_032023-O.webp"
+      "img": "https://http2.mlstatic.com/D_NQ_NP_930255-MLB54746659634_032023-O.webp",
+      "tipo": "Comum"
     },
     {
       "id": 5,
       "nome": "Neymar",
       "coletada": "Coletada",
-      "img": "https://i.pinimg.com/736x/eb/c5/99/ebc599e06c0a6b984fc78dc0165a9741.jpg"
+      "img": "https://i.pinimg.com/736x/eb/c5/99/ebc599e06c0a6b984fc78dc0165a9741.jpg",
+      "tipo": "Brilhante"
     }
   ]
 }

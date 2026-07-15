@@ -10,8 +10,8 @@
         </ion-tab-button>
 
         <ion-tab-button tab="tab1" href="/tabs/tab1">
-          <ion-icon aria-hidden="true" :icon="square" />
-          <ion-label>Status</ion-label>
+          <ion-icon aria-hidden="true" :icon="statsChart" />
+          <ion-label>Estatísticas</ion-label>
         </ion-tab-button>
         
 
@@ -21,8 +21,18 @@
         </ion-tab-button>
 
          <ion-tab-button tab="tab4" href="/tabs/tab4">
+          <ion-icon aria-hidden="true" :icon="star" />
+          <ion-label>Favoritas</ion-label>
+        </ion-tab-button>
+
+        <ion-tab-button tab="conquistas" href="/tabs/conquistas">
           <ion-icon aria-hidden="true" :icon="starOutline" />
           <ion-label>Conquistas</ion-label>
+        </ion-tab-button>
+
+        <ion-tab-button tab="historico" href="/tabs/historico">
+          <ion-icon aria-hidden="true" :icon="timeOutline" />
+          <ion-label>Histórico</ion-label>
         </ion-tab-button>
       </ion-tab-bar>
     </ion-tabs>
@@ -31,5 +41,5 @@
 
 <script setup lang="ts">
 import { IonTabBar, IonTabButton, IonTabs, IonLabel, IonIcon, IonPage, IonRouterOutlet } from '@ionic/vue';
-import { albumsOutline, apps, square, starOutline } from 'ionicons/icons';
+import { albumsOutline, apps, square, star, starOutline, timeOutline, statsChart } from 'ionicons/icons';
 </script>
