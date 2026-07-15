@@ -5,17 +5,12 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted} from 'vue';
-import { initDatabase } from './services/database';
-// import { dropDatabase } from './services/database';
-import { useAlbum } from './composables/useAlbum';
 import { IonApp, IonRouterOutlet } from '@ionic/vue';
 
-const { carregarFigurinhas } = useAlbum()
+import { onMounted } from 'vue';
+import { initDatabase } from './services/database';
 
-onMounted(async () =>{  
- // await dropDatabase()
+onMounted(async () => {
   await initDatabase()
-  await carregarFigurinhas()
 })
 </script>

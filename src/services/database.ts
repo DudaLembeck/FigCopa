@@ -1,401 +1,247 @@
-import { CapacitorSQLite, SQLiteDBConnection, SQLiteConnection } from "@capacitor-community/sqlite";
-import data from "../data/data.json";
+import {
+  CapacitorSQLite,
+  SQLiteConnection,
+  SQLiteDBConnection,
+} from "@capacitor-community/sqlite";
 
-const dbName = 'appdatabase';
+const dbName = "AlbumCopa";
 let db: SQLiteDBConnection | null = null;
 let initialized = false;
+
 const sqliteConnection = new SQLiteConnection(CapacitorSQLite);
 
 async function ensureDatabase() {
-    if (initialized && db) {
-        return;
-    }
+  if (initialized && db) return;
 
-    if (!db) {
-        db = await sqliteConnection.createConnection(dbName, false, "no-encryption", 1, false);
-    }
+  if (!db) {
+    db = await sqliteConnection.createConnection(
+      dbName,
+      false,
+      "no-encryption",
+      1,
+      false
+    );
+  }
 
-    await db.open();
+  await db.open();
 
-    await db.execute(`CREATE TABLE IF NOT EXISTS usuarios (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        nome TEXT NOT NULL,
-        email TEXT NOT NULL UNIQUE,
-        senha TEXT
-    )`);
+  // TABELA USUARIOS
+  await db.execute(`
+    CREATE TABLE IF NOT EXISTS usuarios (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      nome TEXT NOT NULL,
+      login TEXT NOT NULL UNIQUE,
+      senha TEXT NOT NULL
+    );
+  `);
 
+  // TABELA JOGADORES
+  await db.execute(`
+    CREATE TABLE IF NOT EXISTS jogadores (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      nome TEXT NOT NULL,
+      selecao TEXT NOT NULL,
+      foto TEXT NOT NULL,
+      raridade TEXT NOT NULL,
+      brilhante INTEGER DEFAULT 0
+    );
+  `);
 
-    await db.execute(`CREATE TABLE IF NOT EXISTS figurinhas (
-        id INTEGER PRIMARY KEY,
-        nome TEXT NOT NULL,
-        img TEXT,
-        coletada INTEGER NOT NULL DEFAULT 0,
-        favorite INTEGER NOT NULL DEFAULT 0,
-        collected_at DATETIME,
-        tipo TEXT DEFAULT 'Comum'
-    );`);
+  // TABELA ALBUM (RELACIONAMENTO USUARIO x JOGADOR)
+  await db.execute(`
+    CREATE TABLE IF NOT EXISTS album (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      usuario_id INTEGER NOT NULL,
+      jogador_id INTEGER NOT NULL,
+      coletada INTEGER NOT NULL DEFAULT 0,
+      UNIQUE(usuario_id, jogador_id),
+      FOREIGN KEY(usuario_id) REFERENCES usuarios(id),
+      FOREIGN KEY(jogador_id) REFERENCES jogadores(id)
+    );
+  `);
 
-    await db.execute(`CREATE TABLE IF NOT EXISTS conquistas (
-        id TEXT PRIMARY KEY,
-        titulo TEXT NOT NULL,
-        descricao TEXT NOT NULL,
-        categoria TEXT NOT NULL,
-        meta INTEGER NOT NULL,
-        icone TEXT,
-        desbloqueada INTEGER NOT NULL DEFAULT 0,
-        desbloqueada_em DATETIME
-    );`);
+  // TABELA ACHIEVEMENTS (CONQUISTAS DISPONÍVEIS)
+  await db.execute(`
+    CREATE TABLE IF NOT EXISTS achievements (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      nome TEXT NOT NULL,
+      descricao TEXT NOT NULL,
+      icone TEXT NOT NULL,
+      requisito TEXT NOT NULL,
+      valor INTEGER NOT NULL
+    );
+  `);
 
-    await seedFigurinhas();
-    await seedConquistas();
+  // TABELA USER_ACHIEVEMENTS (CONQUISTAS DESBLOQUEADAS PELO USUÁRIO)
+  await db.execute(`
+    CREATE TABLE IF NOT EXISTS user_achievements (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      user_id INTEGER NOT NULL,
+      achievement_id INTEGER NOT NULL,
+      data_desbloqueio TEXT NOT NULL,
+      FOREIGN KEY(user_id) REFERENCES usuarios(id),
+      FOREIGN KEY(achievement_id) REFERENCES achievements(id)
+    );
+  `);
 
-    initialized = true;
+  await popularDadosIniciais();
+
+  initialized = true;
 }
 
-
-
-async function seedFigurinhas() {
-    if (!db) return;
-
-    const resultado = await db.query('SELECT COUNT(*) as total FROM figurinhas;');
-    const total = resultado.values?.[0]?.total ?? 0;
-
-    if (total > 0) {
-        return;
-    }
-
-    for (const figura of data.figuras) {
-        await db.run(
-            `INSERT OR IGNORE INTO figurinhas (id, nome, img, coletada, favorite, collected_at, tipo) VALUES (?, ?, ?, ?, ?, ?, ?);`,
-            [
-                figura.id,
-                figura.nome,
-                figura.img,
-                figura.coletada === 'Coletada' ? 1 : 0,
-                0, // Default favorite to 0
-                null, // Default collected_at to null
-                figura.tipo || 'Comum' // Default tipo to 'Comum'
-            ]
-        );
-    }
-}
-
-// Catálogo fixo de conquistas. "meta" é interpretado de acordo com a categoria:
-// - total / raras / brilhantes: quantidade de figurinhas coletadas
-// - percentual: percentual (0-100) de conclusão do álbum
-// - colecao: não é usado (o desbloqueio depende de a coleção do "tipo" indicado em `tipoColecao` estar 100% completa)
-export interface ConquistaDef {
-    id: string;
-    titulo: string;
-    descricao: string;
-    categoria: 'total' | 'raras' | 'brilhantes' | 'percentual' | 'colecao';
-    meta: number;
-    icone: string;
-    tipoColecao?: string;
-}
-
-export const CONQUISTAS_CATALOGO: ConquistaDef[] = [
-    // Quantidade total de figurinhas coletadas
-    { id: 'total_1', titulo: 'Primeiros Passos', descricao: 'Colete sua primeira figurinha.', categoria: 'total', meta: 1, icone: 'ribbon' },
-    { id: 'total_5', titulo: 'Colecionador Iniciante', descricao: 'Colete 5 figurinhas.', categoria: 'total', meta: 5, icone: 'albums' },
-    { id: 'total_15', titulo: 'Colecionador Dedicado', descricao: 'Colete 15 figurinhas.', categoria: 'total', meta: 15, icone: 'file-tray-full' },
-    { id: 'total_30', titulo: 'Mestre Colecionador', descricao: 'Colete 30 figurinhas.', categoria: 'total', meta: 30, icone: 'trophy' },
-
-    // Figurinhas raras
-    { id: 'raras_1', titulo: 'Caçador de Raridades', descricao: 'Colete 1 figurinha rara.', categoria: 'raras', meta: 1, icone: 'diamond' },
-    { id: 'raras_5', titulo: 'Especialista em Raras', descricao: 'Colete 5 figurinhas raras.', categoria: 'raras', meta: 5, icone: 'diamond' },
-    { id: 'raras_10', titulo: 'Lenda das Raras', descricao: 'Colete 10 figurinhas raras.', categoria: 'raras', meta: 10, icone: 'diamond' },
-
-    // Figurinhas brilhantes
-    { id: 'brilhantes_1', titulo: 'Brilho Inicial', descricao: 'Colete 1 figurinha brilhante.', categoria: 'brilhantes', meta: 1, icone: 'sparkles' },
-    { id: 'brilhantes_3', titulo: 'Coleção Brilhante', descricao: 'Colete 3 figurinhas brilhantes.', categoria: 'brilhantes', meta: 3, icone: 'sparkles' },
-    { id: 'brilhantes_5', titulo: 'Resplendor Total', descricao: 'Colete 5 figurinhas brilhantes.', categoria: 'brilhantes', meta: 5, icone: 'sparkles' },
-
-    // Percentual de conclusão do álbum
-    { id: 'percentual_25', titulo: 'Um Quarto do Caminho', descricao: 'Complete 25% do álbum.', categoria: 'percentual', meta: 25, icone: 'pie-chart' },
-    { id: 'percentual_50', titulo: 'Metade do Álbum', descricao: 'Complete 50% do álbum.', categoria: 'percentual', meta: 50, icone: 'pie-chart' },
-    { id: 'percentual_75', titulo: 'Quase Lá', descricao: 'Complete 75% do álbum.', categoria: 'percentual', meta: 75, icone: 'pie-chart' },
-    { id: 'percentual_100', titulo: 'Álbum Completo!', descricao: 'Complete 100% do álbum.', categoria: 'percentual', meta: 100, icone: 'trophy' },
-
-    // Conclusão de coleções específicas (por tipo de figurinha)
-    { id: 'colecao_comum', titulo: 'Coleção Comum Completa', descricao: 'Colete todas as figurinhas do tipo Comum.', categoria: 'colecao', meta: 100, icone: 'checkmark-done', tipoColecao: 'Comum' },
-    { id: 'colecao_rara', titulo: 'Coleção Rara Completa', descricao: 'Colete todas as figurinhas do tipo Rara.', categoria: 'colecao', meta: 100, icone: 'checkmark-done', tipoColecao: 'Rara' },
-    { id: 'colecao_brilhante', titulo: 'Coleção Brilhante Completa', descricao: 'Colete todas as figurinhas do tipo Brilhante.', categoria: 'colecao', meta: 100, icone: 'checkmark-done', tipoColecao: 'Brilhante' },
-];
-
-async function seedConquistas() {
-    if (!db) return;
-
-    for (const conquista of CONQUISTAS_CATALOGO) {
-        await db.run(
-            `INSERT OR IGNORE INTO conquistas (id, titulo, descricao, categoria, meta, icone, desbloqueada, desbloqueada_em) VALUES (?, ?, ?, ?, ?, ?, 0, NULL);`,
-            [conquista.id, conquista.titulo, conquista.descricao, conquista.categoria, conquista.meta, conquista.icone]
-        );
-    }
-}
-
-function getDB() {
-    if (!db) {
-        throw new Error('Banco de dados ainda não inicializado')
-    }
-    return db
+function getDb() {
+  if (!db) throw new Error("Banco de dados ainda não inicializado");
+  return db;
 }
 
 export async function initDatabase() {
-    try {
-        await ensureDatabase()
-    } catch (error) {
-        console.error('Erro ao iniciar DB', error)
-        throw error
+  try {
+    await ensureDatabase();
+  } catch (error) {
+    console.error("Erro ao iniciar DB SQLite", error);
+  }
+}
+
+async function popularDadosIniciais() {
+  // POPULAR JOGADORES
+  const resJogadores = await getDb().query("SELECT COUNT(*) as total FROM jogadores");
+  if (resJogadores.values?.[0]?.total === 0) {
+    const jogadores = [
+      ["Neymar Jr", "Brasil", "https://img.a.transfermarkt.technology/portrait/big/68290-1697056482.jpg", "Lendária", 1],
+      ["Lionel Messi", "Argentina", "https://img.a.transfermarkt.technology/portrait/big/28003-1710080339.jpg", "Lendária", 1],
+      ["Cristiano Ronaldo", "Portugal", "https://img.a.transfermarkt.technology/portrait/big/8198-1694609670.jpg", "Lendária", 1],
+      ["Vinicius Jr", "Brasil", "https://img.a.transfermarkt.technology/portrait/big/371998-1664869583.jpg", "Épica", 0],
+      ["Kylian Mbappé", "França", "https://img.a.transfermarkt.technology/portrait/big/342229-1682683695.jpg", "Lendária", 0],
+      ["Jude Bellingham", "Inglaterra", "https://img.a.transfermarkt.technology/portrait/big/581678-1693987944.jpg", "Lendária", 0],
+      ["Lamine Yamal", "Espanha", "https://img.a.transfermarkt.technology/portrait/big/937958-1699476962.jpg", "Lendária", 1],
+      ["Rodrygo", "Brasil", "https://img.a.transfermarkt.technology/portrait/big/412363-1697056493.jpg", "Rara", 0],
+      ["Alisson", "Brasil", "https://img.a.transfermarkt.technology/portrait/big/105470-1668528909.jpg", "Rara", 0],
+      ["Marquinhos", "Brasil", "https://img.a.transfermarkt.technology/portrait/big/181767-1668528947.jpg", "Comum", 0]
+    ];
+    for (const j of jogadores) {
+      await getDb().run("INSERT INTO jogadores (nome, selecao, foto, raridade, brilhante) VALUES (?, ?, ?, ?, ?)", j);
     }
-}
+  }
 
-export async function addUsuario(nome: string, email: string, senha: string) {
-    await ensureDatabase()
-    const query = 'INSERT INTO usuarios (nome, email, senha) VALUES (?, ?, ?);'
-    await getDB().run(query, [nome, email, senha])
-}
-
-export async function loginUsuario(email: string, senha: string) {
-    await ensureDatabase()
-    const query = `
-    SELECT * FROM usuarios
-    WHERE email = ? AND senha = ?;
-  `
-    const result = await getDB().query(query, [email, senha])
-
-    return result.values?.[0] || null
-}
-
-export async function listarFigurinhas() {
-    await ensureDatabase()
-    const resultado = await getDB().query('SELECT * FROM figurinhas ORDER BY id;')
-    return resultado.values ?? []
-}
-
-
-export async function atualizarStatusFigurinha(id: number, coletada: number) {
-    await ensureDatabase()
-    const db = getDB();
-    const collectedAt = coletada === 1 ? new Date().toISOString() : null;
-    await db.run(
-        `UPDATE figurinhas SET coletada = ?, collected_at = ? WHERE id = ?;`,
-        [coletada, collectedAt, id]
-    )
-
-    // Toda vez que o status de uma figurinha mudar, recalculamos as conquistas
-    await recalcularConquistas();
-}
-
-
-export async function toggleFavorite(id: number, favorite: number) {
-    await ensureDatabase();
-    await getDB().run(
-        `UPDATE figurinhas SET favorite = ? WHERE id = ?;`,
-        [favorite, id]
-    );
-}
-
-export async function listarFigurinhasFavoritas() {
-    await ensureDatabase();
-    const resultado = await getDB().query(
-        `SELECT * FROM figurinhas WHERE favorite = 1 ORDER BY id;`
-    );
-    return resultado.values ?? [];
-}
-
-export async function listarUltimasFigurinhasColetadas(limit: number = 10) {
-    await ensureDatabase();
-    const resultado = await getDB().query(
-        `SELECT * FROM figurinhas WHERE coletada = 1 AND collected_at IS NOT NULL ORDER BY collected_at DESC LIMIT ?;`,
-        [limit]
-    );
-    return resultado.values ?? [];
-}
-
-export async function listarFigurinhasColetadasOrdenadas(orderBy: string = 'collected_at', order: 'ASC' | 'DESC' = 'DESC') {
-    await ensureDatabase();
-    const resultado = await getDB().query(
-        `SELECT * FROM figurinhas WHERE coletada = 1 ORDER BY ${orderBy} ${order};`
-    );
-    return resultado.values ?? [];
-}
-
-export async function getStatistics() {
-    await ensureDatabase();
-    const db = getDB();
-
-    const totalFigurinhas = (await db.query(`SELECT COUNT(*) as count FROM figurinhas;`)).values?.[0]?.count ?? 0;
-    const figurinhasColetadas = (await db.query(`SELECT COUNT(*) as count FROM figurinhas WHERE coletada = 1;`)).values?.[0]?.count ?? 0;
-    const figurinhasFaltantes = totalFigurinhas - figurinhasColetadas;
-    const figurinhasRarasColetadas = (await db.query(`SELECT COUNT(*) as count FROM figurinhas WHERE coletada = 1 AND tipo = 'Rara';`)).values?.[0]?.count ?? 0;
-    const figurinhasBrilhantesColetadas = (await db.query(`SELECT COUNT(*) as count FROM figurinhas WHERE coletada = 1 AND tipo = 'Brilhante';`)).values?.[0]?.count ?? 0;
-    const percentualConclusao = totalFigurinhas > 0 ? (figurinhasColetadas / totalFigurinhas) * 100 : 0;
-
-    return {
-        totalFigurinhas,
-        figurinhasColetadas,
-        figurinhasFaltantes,
-        figurinhasRarasColetadas,
-        figurinhasBrilhantesColetadas,
-        percentualConclusao
-    };
-}
-
-export async function getRankingScore() {
-    await ensureDatabase();
-    const db = getDB();
-
-    const comumScore = (await db.query(`SELECT COUNT(*) as count FROM figurinhas WHERE coletada = 1 AND tipo = 'Comum';`)).values?.[0]?.count ?? 0;
-    const raraScore = (await db.query(`SELECT COUNT(*) as count FROM figurinhas WHERE coletada = 1 AND tipo = 'Rara';`)).values?.[0]?.count ?? 0;
-    const brilhanteScore = (await db.query(`SELECT COUNT(*) as count FROM figurinhas WHERE coletada = 1 AND tipo = 'Brilhante';`)).values?.[0]?.count ?? 0;
-
-    const totalScore = (comumScore * 1) + (raraScore * 5) + (brilhanteScore * 10);
-
-    return totalScore;
-}
-
-export interface Conquista {
-    id: string;
-    titulo: string;
-    descricao: string;
-    categoria: string;
-    meta: number;
-    icone: string;
-    desbloqueada: number;
-    desbloqueada_em: string | null;
-    valorAtual: number;
-}
-
-// Recalcula todas as conquistas com base no estado atual do álbum e persiste
-// no SQLite quaisquer novos desbloqueios. Uma conquista, uma vez desbloqueada,
-// nunca volta a ficar bloqueada.
-export async function recalcularConquistas(): Promise<Conquista[]> {
-    await ensureDatabase();
-    const db = getDB();
-
-    const stats = await getStatistics();
-
-    const tiposResultado = await db.query(
-        `SELECT tipo, COUNT(*) as total, SUM(coletada) as coletadas FROM figurinhas GROUP BY tipo;`
-    );
-    const porTipo: Record<string, { total: number; coletadas: number }> = {};
-    for (const linha of tiposResultado.values ?? []) {
-        porTipo[linha.tipo] = { total: linha.total, coletadas: linha.coletadas ?? 0 };
+  // POPULAR CONQUISTAS
+  const resConquistas = await getDb().query("SELECT COUNT(*) as total FROM achievements");
+  if (resConquistas.values?.[0]?.total === 0) {
+    const conquistas = [
+      ["Primeira Figurinha", "Desbloquear ao coletar a primeira figurinha.", "trophy-outline", "total", 1],
+      ["Iniciante", "Coletar 5 figurinhas.", "star-outline", "total", 5],
+      ["Colecionador", "Coletar 10 figurinhas.", "ribbon-outline", "total", 10],
+      ["Caçador de Raras", "Coletar 3 figurinhas raras ou lendárias.", "diamond-outline", "raras", 3],
+      ["Brilho Inicial", "Coletar 2 figurinhas brilhantes.", "flash-outline", "brilhantes", 2],
+      ["Álbum em Construção", "Completar 50% do álbum.", "build-outline", "percentual", 50],
+      ["Campeão da Copa", "Completar 100% do álbum.", "medal-outline", "percentual", 100]
+    ];
+    for (const c of conquistas) {
+      await getDb().run("INSERT INTO achievements (nome, descricao, icone, requisito, valor) VALUES (?, ?, ?, ?, ?)", c);
     }
-
-    const novasDesbloqueadas: Conquista[] = [];
-
-    for (const def of CONQUISTAS_CATALOGO) {
-        let atingida = false;
-        let valorAtual = 0;
-
-        switch (def.categoria) {
-            case 'total':
-                valorAtual = stats.figurinhasColetadas;
-                atingida = valorAtual >= def.meta;
-                break;
-            case 'raras':
-                valorAtual = stats.figurinhasRarasColetadas;
-                atingida = valorAtual >= def.meta;
-                break;
-            case 'brilhantes':
-                valorAtual = stats.figurinhasBrilhantesColetadas;
-                atingida = valorAtual >= def.meta;
-                break;
-            case 'percentual':
-                valorAtual = Math.round(stats.percentualConclusao);
-                atingida = stats.percentualConclusao >= def.meta;
-                break;
-            case 'colecao': {
-                const grupo = def.tipoColecao ? porTipo[def.tipoColecao] : undefined;
-                if (grupo && grupo.total > 0) {
-                    valorAtual = grupo.coletadas;
-                    atingida = grupo.coletadas >= grupo.total;
-                }
-                break;
-            }
-        }
-
-        if (atingida) {
-            const jaDesbloqueada = await db.query(
-                `SELECT desbloqueada FROM conquistas WHERE id = ?;`,
-                [def.id]
-            );
-            const estavaDesbloqueada = jaDesbloqueada.values?.[0]?.desbloqueada === 1;
-
-            if (!estavaDesbloqueada) {
-                await db.run(
-                    `UPDATE conquistas SET desbloqueada = 1, desbloqueada_em = ? WHERE id = ?;`,
-                    [new Date().toISOString(), def.id]
-                );
-                novasDesbloqueadas.push({
-                    ...def,
-                    desbloqueada: 1,
-                    desbloqueada_em: new Date().toISOString(),
-                    valorAtual
-                });
-            }
-        }
-    }
-
-    return novasDesbloqueadas;
+  }
 }
 
-// Lista todas as conquistas (desbloqueadas ou não) já com o progresso atual calculado,
-// para exibição na tela de Conquistas.
-export async function listarConquistas(): Promise<Conquista[]> {
-    await ensureDatabase();
-    const db = getDB();
+// --- FUNÇÕES DE NEGÓCIO ---
 
-    const stats = await getStatistics();
-    const tiposResultado = await db.query(
-        `SELECT tipo, COUNT(*) as total, SUM(coletada) as coletadas FROM figurinhas GROUP BY tipo;`
-    );
-    const porTipo: Record<string, { total: number; coletadas: number }> = {};
-    for (const linha of tiposResultado.values ?? []) {
-        porTipo[linha.tipo] = { total: linha.total, coletadas: linha.coletadas ?? 0 };
+export async function addUsuario(nome: string, login: string, senha: string) {
+  await ensureDatabase();
+  const loginNormalizado = login.trim().toLowerCase();
+  await getDb().run("INSERT INTO usuarios (nome, login, senha) VALUES (?, ?, ?)", [nome, loginNormalizado, senha]);
+}
+
+export async function realizarLogin(login: string, senha: string) {
+  await ensureDatabase();
+  const loginNormalizado = login.trim().toLowerCase();
+  const res = await getDb().query("SELECT * FROM usuarios WHERE login = ? AND senha = ?", [loginNormalizado, senha]);
+  return res.values || [];
+}
+
+export async function listJogadores(usuarioId: number) {
+  await ensureDatabase();
+  const res = await getDb().query(`
+    SELECT j.*, COALESCE(a.coletada, 0) as coletada
+    FROM jogadores j
+    LEFT JOIN album a ON a.jogador_id = j.id AND a.usuario_id = ?
+  `, [usuarioId]);
+  return res.values || [];
+}
+
+export async function toggleFigurinha(usuarioId: number, jogadorId: number) {
+  await ensureDatabase();
+  const res = await getDb().query("SELECT coletada FROM album WHERE usuario_id = ? AND jogador_id = ?", [usuarioId, jogadorId]);
+  
+  if (res.values && res.values.length > 0) {
+    const novoStatus = res.values[0].coletada === 1 ? 0 : 1;
+    await getDb().run("UPDATE album SET coletada = ? WHERE usuario_id = ? AND jogador_id = ?", [novoStatus, usuarioId, jogadorId]);
+  } else {
+    await getDb().run("INSERT INTO album (usuario_id, jogador_id, coletada) VALUES (?, ?, 1)", [usuarioId, jogadorId]);
+  }
+  
+  await verificarConquistas(usuarioId);
+  return true;
+}
+
+// --- SISTEMA DE CONQUISTAS (SQL PURO) ---
+
+export async function listConquistasUsuario(usuarioId: number) {
+  await ensureDatabase();
+  const res = await getDb().query(`
+    SELECT a.*, 
+           CASE WHEN ua.id IS NOT NULL THEN 1 ELSE 0 END as desbloqueada,
+           ua.data_desbloqueio
+    FROM achievements a
+    LEFT JOIN user_achievements ua ON ua.achievement_id = a.id AND ua.user_id = ?
+  `, [usuarioId]);
+  return res.values || [];
+}
+
+async function verificarConquistas(usuarioId: number) {
+  const jogadores = await listJogadores(usuarioId);
+  const totalColetadas = jogadores.filter(j => j.coletada === 1).length;
+  const rarasColetadas = jogadores.filter(j => j.coletada === 1 && (j.raridade === 'Rara' || j.raridade === 'Épica' || j.raridade === 'Lendária')).length;
+  const brilhantesColetadas = jogadores.filter(j => j.coletada === 1 && j.brilhante === 1).length;
+  const percentual = (totalColetadas / jogadores.length) * 100;
+
+  const res = await getDb().query("SELECT * FROM achievements");
+  const conquistas = res.values || [];
+
+  for (const c of conquistas) {
+    // Verifica se o usuário já tem essa conquista
+    const jaTem = await getDb().query("SELECT id FROM user_achievements WHERE user_id = ? AND achievement_id = ?", [usuarioId, c.id]);
+    if (jaTem.values && jaTem.values.length > 0) continue;
+
+    let desbloqueou = false;
+    if (c.requisito === 'total' && totalColetadas >= c.valor) desbloqueou = true;
+    if (c.requisito === 'raras' && rarasColetadas >= c.valor) desbloqueou = true;
+    if (c.requisito === 'brilhantes' && brilhantesColetadas >= c.valor) desbloqueou = true;
+    if (c.requisito === 'percentual' && percentual >= c.valor) desbloqueou = true;
+
+    if (desbloqueou) {
+      const data = new Date().toLocaleDateString('pt-BR');
+      await getDb().run("INSERT INTO user_achievements (user_id, achievement_id, data_desbloqueio) VALUES (?, ?, ?)", [usuarioId, c.id, data]);
     }
+  }
+}
 
-    const resultado = await db.query(`SELECT * FROM conquistas;`);
-    const linhas = resultado.values ?? [];
+// --- CONTATOS (SQLite) ---
 
-    return CONQUISTAS_CATALOGO.map(def => {
-        const linha = linhas.find((l: any) => l.id === def.id);
+export async function addContato(nome: string, email: string, telefone: string) {
+  await ensureDatabase();
+  await getDb().run("INSERT INTO contatos (nome, email, telefone) VALUES (?, ?, ?)", [nome, email, telefone]);
+}
 
-        let valorAtual = 0;
-        let metaExibida = def.meta;
-        switch (def.categoria) {
-            case 'total':
-                valorAtual = stats.figurinhasColetadas;
-                break;
-            case 'raras':
-                valorAtual = stats.figurinhasRarasColetadas;
-                break;
-            case 'brilhantes':
-                valorAtual = stats.figurinhasBrilhantesColetadas;
-                break;
-            case 'percentual':
-                valorAtual = Math.round(stats.percentualConclusao);
-                break;
-            case 'colecao': {
-                const grupo = def.tipoColecao ? porTipo[def.tipoColecao] : undefined;
-                valorAtual = grupo?.coletadas ?? 0;
-                metaExibida = grupo?.total ?? def.meta;
-                break;
-            }
-        }
+export async function listContatos() {
+  await ensureDatabase();
+  const res = await getDb().query("SELECT * FROM contatos");
+  return res.values || [];
+}
 
-        return {
-            id: def.id,
-            titulo: def.titulo,
-            descricao: def.descricao,
-            categoria: def.categoria,
-            meta: metaExibida,
-            icone: def.icone,
-            desbloqueada: linha?.desbloqueada ?? 0,
-            desbloqueada_em: linha?.desbloqueada_em ?? null,
-            valorAtual
-        };
-    });
+export async function updateContato(id: number, nome: string, email: string, telefone: string) {
+  await ensureDatabase();
+  await getDb().run("UPDATE contatos SET nome = ?, email = ?, telefone = ? WHERE id = ?", [nome, email, telefone, id]);
+}
+
+export async function deleteContatoById(id: number) {
+  await ensureDatabase();
+  await getDb().run("DELETE FROM contatos WHERE id = ?", [id]);
 }

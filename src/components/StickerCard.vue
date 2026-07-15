@@ -1,78 +1,74 @@
 <template>
-  <ion-card>
+  <ion-card class="sticker-card">
+
+    <ion-img
+      :src="sticker.foto"
+      alt="Jogador"
+    />
+
     <ion-card-header>
-      <ion-card-title>
-        {{ figura.nome }}
-        <ion-icon
-          v-if="figura.favorite === 1"
-          :icon="star"
-          color="warning"
-          style="margin-left: 5px;"
-        ></ion-icon>
-      </ion-card-title>
+      <ion-card-title>{{ sticker.nome }}</ion-card-title>
+      <ion-card-subtitle>{{ sticker.selecao }}</ion-card-subtitle>
+      <ion-card-subtitle>{{ sticker.raridade }}</ion-card-subtitle>
     </ion-card-header>
 
     <ion-card-content>
-      <ion-img :src="figura.img"></ion-img>
 
-      <ion-label>
-        Status:
-        <ion-badge :color="figura.coletada === 1 ? 'success' : 'medium'">
-          {{ figura.coletada === 1 ? 'Coletada' : 'Pendente' }}
-        </ion-badge>
-      </ion-label>
-
-      <ion-label v-if="figura.collected_at">
-        Coletada em: {{ new Date(figura.collected_at).toLocaleDateString() }}
-      </ion-label>
+      <ion-badge
+        :color="sticker.coletada ? 'success' : 'danger'"
+        :class="sticker.coletada ? 'sticker-status collected' : 'sticker-status pending'"
+      >
+        {{ sticker.coletada ? 'Coletada' : 'Pendente' }}
+      </ion-badge>
 
       <ion-button
         expand="block"
-        :color="figura.coletada === 1 ? 'medium' : 'success'"
-        @click="alternarStatus"
+        class="ion-margin-top"
+        @click="toggleColetada"
       >
-        {{ figura.coletada === 1 ? 'Marcar como pendente' : 'Marcar como coletada' }}
+        {{
+          sticker.coletada
+            ? 'Remover da coleção'
+            : 'Coletar figurinha'
+        }}
       </ion-button>
 
-      <ion-button
-        expand="block"
-        fill="outline"
-        :color="figura.favorite === 1 ? 'warning' : 'medium'"
-        @click="toggleFavoriteStatus"
-      >
-        <ion-icon slot="start" :icon="figura.favorite === 1 ? star : starOutline"></ion-icon>
-        {{ figura.favorite === 1 ? 'Remover dos favoritos' : 'Adicionar aos favoritos' }}
-      </ion-button>
     </ion-card-content>
+
   </ion-card>
 </template>
 
 <script setup lang="ts">
 import {
-  IonCard,
-  IonCardHeader,
-  IonCardTitle,
-  IonCardContent,
-  IonImg,
-  IonLabel,
   IonBadge,
-  IonButton
-} from '@ionic/vue'
-
-import { Figura, useAlbum } from '@/composables/useAlbum'
-import { star, starOutline } from 'ionicons/icons';
+  IonButton,
+  IonCard,
+  IonCardContent,
+  IonCardHeader,
+  IonCardSubtitle,
+  IonCardTitle,
+  IonImg
+} from "@ionic/vue"
 
 const props = defineProps<{
-  figura: Figura
+  sticker: {
+    id: number
+    nome: string
+    selecao: string
+    foto: string
+    coletada: boolean
+    raridade: string
+  }
 }>()
 
-const { alterarStatus, alternarFavorito } = useAlbum()
+const emit = defineEmits<{
+  toggle: [id: number]
+}>()
 
-async function alternarStatus() {
-  await alterarStatus(props.figura.id, props.figura.coletada !== 1)
-}
-
-async function toggleFavoriteStatus() {
-  await alternarFavorito(props.figura.id, props.figura.favorite !== 1)
+function toggleColetada() {
+  emit(
+    "toggle",
+    props.sticker.id
+  )
 }
 </script>

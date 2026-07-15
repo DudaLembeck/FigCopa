@@ -1,0 +1,1101 @@
+/* ============================================================================
+   ESTILOS GLOBAIS - APLICATIVO DE ÁLBUM DE FIGURINHAS
+   ============================================================================ */
+
+/* ============================================================================
+   1. VARIÁVEIS CSS (Cores, Tipografia, Espaçamento)
+   ============================================================================ */
+
+:root {
+  /* Cores Primárias */
+  --primary-color: #3880ff;
+  --primary-dark: #0a66d2;
+  --primary-light: #5a96ff;
+
+  /* Cores Secundárias */
+  --success-color: #2dd36f;
+  --danger-color: #eb445a;
+  --warning-color: #ffc409;
+  --info-color: #00bcd4;
+
+  /* Cores Neutras */
+  --dark-color: #222428;
+  --light-color: #f4f5f8;
+  --medium-color: #989aa2;
+  --white-color: #ffffff;
+
+  /* Gradientes */
+  --gradient-primary: linear-gradient(135deg, #3880ff 0%, #0a66d2 100%);
+  --gradient-success: linear-gradient(135deg, #2dd36f 0%, #1f9d55 100%);
+  --gradient-danger: linear-gradient(135deg, #eb445a 0%, #c93642 100%);
+
+  /* Tipografia */
+  --font-family-base: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+  --font-size-base: 16px;
+  --font-size-lg: 18px;
+  --font-size-xl: 20px;
+  --font-size-sm: 14px;
+  --font-size-xs: 12px;
+
+  --font-weight-light: 300;
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-bold: 700;
+
+  /* Espaçamento */
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 16px;
+  --spacing-lg: 24px;
+  --spacing-xl: 32px;
+  --spacing-2xl: 48px;
+
+  /* Border Radius */
+  --border-radius-sm: 4px;
+  --border-radius-md: 8px;
+  --border-radius-lg: 12px;
+  --border-radius-xl: 16px;
+  --border-radius-full: 9999px;
+
+  /* Sombras */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+  --shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.1);
+
+  /* Transições */
+  --transition-fast: 150ms ease-in-out;
+  --transition-normal: 300ms ease-in-out;
+  --transition-slow: 500ms ease-in-out;
+
+  /* Z-index */
+  --z-dropdown: 1000;
+  --z-sticky: 1020;
+  --z-fixed: 1030;
+  --z-modal-backdrop: 1040;
+  --z-modal: 1050;
+  --z-popover: 1060;
+  --z-tooltip: 1070;
+}
+
+/* ============================================================================
+   2. RESET E ESTILOS BASE
+   ============================================================================ */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html,
+body {
+  font-family: var(--font-family-base);
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-normal);
+  line-height: 1.5;
+  color: var(--dark-color);
+  background-color: var(--white-color);
+}
+
+/* ============================================================================
+   3. TIPOGRAFIA
+   ============================================================================ */
+
+h1, h2, h3, h4, h5, h6 {
+  font-weight: var(--font-weight-bold);
+  line-height: 1.2;
+  margin-bottom: var(--spacing-md);
+}
+
+h1 {
+  font-size: 32px;
+}
+
+h2 {
+  font-size: 28px;
+}
+
+h3 {
+  font-size: 24px;
+}
+
+h4 {
+  font-size: 20px;
+}
+
+h5 {
+  font-size: 18px;
+}
+
+h6 {
+  font-size: 16px;
+}
+
+p {
+  margin-bottom: var(--spacing-md);
+  line-height: 1.6;
+}
+
+a {
+  color: var(--primary-color);
+  text-decoration: none;
+  transition: color var(--transition-fast);
+}
+
+a:hover {
+  color: var(--primary-dark);
+  text-decoration: underline;
+}
+
+/* ============================================================================
+   4. COMPONENTES IONIC - CUSTOMIZAÇÃO
+   ============================================================================ */
+
+/* Header / Toolbar */
+ion-header {
+  --background: var(--white-color);
+  --border-color: #e0e0e0;
+  box-shadow: var(--shadow-sm);
+}
+
+ion-toolbar {
+  --background: var(--white-color);
+  --border-color: #e0e0e0;
+  padding: var(--spacing-md) var(--spacing-lg);
+  min-height: 56px;
+}
+
+ion-title {
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--dark-color);
+  padding: 0;
+}
+
+/* Content */
+ion-content {
+  --background: var(--light-color);
+}
+
+ion-content.ion-padding {
+  padding: var(--spacing-lg);
+}
+
+/* Cards */
+ion-card {
+  --background: var(--white-color);
+  --box-shadow: var(--shadow-md);
+  border-radius: var(--border-radius-lg);
+  margin: var(--spacing-md) 0;
+  overflow: hidden;
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+ion-card:hover {
+  transform: translateY(-2px);
+  --box-shadow: var(--shadow-lg);
+}
+
+ion-card-header {
+  padding: var(--spacing-lg);
+  background-color: var(--light-color);
+  border-bottom: 1px solid #e0e0e0;
+}
+
+ion-card-title {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-bold);
+  color: var(--dark-color);
+  margin: 0;
+}
+
+ion-card-subtitle {
+  font-size: var(--font-size-sm);
+  color: var(--medium-color);
+  margin-top: var(--spacing-sm);
+}
+
+ion-card-content {
+  padding: var(--spacing-lg);
+}
+
+ion-card-content p {
+  margin-bottom: var(--spacing-md);
+  font-size: var(--font-size-base);
+  line-height: 1.6;
+}
+
+ion-card-content p:last-child {
+  margin-bottom: 0;
+}
+
+/* Buttons */
+ion-button {
+  --border-radius: var(--border-radius-md);
+  --padding-top: var(--spacing-md);
+  --padding-bottom: var(--spacing-md);
+  --padding-start: var(--spacing-lg);
+  --padding-end: var(--spacing-lg);
+  font-weight: var(--font-weight-medium);
+  text-transform: none;
+  transition: all var(--transition-fast);
+}
+
+ion-button[color="primary"] {
+  --background: var(--primary-color);
+  --background-hover: var(--primary-dark);
+}
+
+ion-button[color="success"] {
+  --background: var(--success-color);
+}
+
+ion-button[color="danger"] {
+  --background: var(--danger-color);
+}
+
+ion-button[expand="block"] {
+  width: 100%;
+  margin: var(--spacing-md) 0;
+}
+
+ion-button.ion-margin-top {
+  margin-top: var(--spacing-md);
+}
+
+/* Inputs */
+ion-input {
+  --padding-top: var(--spacing-md);
+  --padding-bottom: var(--spacing-md);
+  --padding-start: var(--spacing-md);
+  --padding-end: var(--spacing-md);
+}
+
+ion-input input {
+  font-size: var(--font-size-base);
+}
+
+/* Searchbar */
+ion-searchbar {
+  --background: var(--white-color);
+  --border-radius: var(--border-radius-lg);
+  --box-shadow: var(--shadow-sm);
+  padding: var(--spacing-md) 0;
+  margin: var(--spacing-md) 0;
+}
+
+ion-searchbar::part(input) {
+  background-color: var(--light-color);
+  border-radius: var(--border-radius-md);
+}
+
+/* Segment */
+ion-segment {
+  --background: var(--white-color);
+  padding: var(--spacing-md) 0;
+  margin: var(--spacing-md) 0;
+  border-radius: var(--border-radius-lg);
+  box-shadow: var(--shadow-sm);
+}
+
+ion-segment-button {
+  --background: transparent;
+  --background-checked: var(--primary-color);
+  --color: var(--medium-color);
+  --color-checked: var(--white-color);
+  --border-radius: var(--border-radius-md);
+  font-weight: var(--font-weight-medium);
+  transition: all var(--transition-fast);
+}
+
+ion-segment-button ion-label {
+  font-size: var(--font-size-base);
+}
+
+/* Badge */
+ion-badge {
+  --padding-top: var(--spacing-xs);
+  --padding-bottom: var(--spacing-xs);
+  --padding-start: var(--spacing-sm);
+  --padding-end: var(--spacing-sm);
+  --border-radius: var(--border-radius-full);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  margin-right: var(--spacing-sm);
+}
+
+ion-badge[color="success"] {
+  --background: var(--success-color);
+}
+
+ion-badge[color="danger"] {
+  --background: var(--danger-color);
+}
+
+/* List */
+ion-list {
+  --background: transparent;
+  padding: var(--spacing-md) 0;
+}
+
+ion-item {
+  --background: var(--white-color);
+  --border-color: #e0e0e0;
+  --padding-start: var(--spacing-lg);
+  --padding-end: var(--spacing-lg);
+  margin-bottom: var(--spacing-sm);
+  border-radius: var(--border-radius-md);
+  transition: all var(--transition-fast);
+}
+
+ion-item:hover {
+  --background: var(--light-color);
+}
+
+ion-item-sliding {
+  margin-bottom: var(--spacing-md);
+}
+
+ion-item-option {
+  --padding-start: var(--spacing-md);
+  --padding-end: var(--spacing-md);
+}
+
+ion-item-option[color="primary"] {
+  --background: var(--primary-color);
+}
+
+ion-item-option[color="danger"] {
+  --background: var(--danger-color);
+}
+
+/* Label */
+ion-label {
+  font-size: var(--font-size-base);
+  color: var(--dark-color);
+  font-weight: var(--font-weight-normal);
+}
+
+ion-label.ion-text-wrap {
+  white-space: normal;
+}
+
+/* Text */
+ion-text {
+  font-size: var(--font-size-base);
+  color: var(--dark-color);
+}
+
+ion-text[color="danger"] {
+  color: var(--danger-color);
+}
+
+ion-text[color="success"] {
+  color: var(--success-color);
+}
+
+/* Note (Mensagens de erro/aviso) */
+ion-note {
+  font-size: var(--font-size-xs);
+  color: var(--danger-color);
+  margin-top: var(--spacing-sm);
+  display: block;
+}
+
+/* Toast */
+ion-toast {
+  --background: var(--dark-color);
+  --color: var(--white-color);
+}
+
+/* Alert */
+ion-alert {
+  --background: var(--white-color);
+}
+
+/* Tabs */
+ion-tabs {
+  --background: var(--white-color);
+}
+
+ion-tab-bar {
+  --background: var(--white-color);
+  --border-color: #e0e0e0;
+  --color: var(--medium-color);
+  --color-selected: var(--primary-color);
+  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
+}
+
+ion-tab-button {
+  --padding-top: var(--spacing-sm);
+  --padding-bottom: var(--spacing-sm);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+}
+
+ion-tab-button.tab-selected {
+  --color: var(--primary-color);
+}
+
+/* Icon */
+ion-icon {
+  font-size: 24px;
+  margin-right: var(--spacing-sm);
+}
+
+/* Grid */
+ion-grid {
+  padding: var(--spacing-md) 0;
+}
+
+ion-row {
+  margin-bottom: var(--spacing-md);
+}
+
+ion-col {
+  padding: var(--spacing-sm);
+}
+
+/* Image */
+ion-img {
+  width: 100%;
+  height: auto;
+  border-radius: var(--border-radius-md);
+  object-fit: cover;
+}
+
+/* ============================================================================
+   5. UTILITÁRIOS
+   ============================================================================ */
+
+/* Margin */
+.margin-top-xs {
+  margin-top: var(--spacing-xs);
+}
+
+.margin-top-sm {
+  margin-top: var(--spacing-sm);
+}
+
+.margin-top-md {
+  margin-top: var(--spacing-md);
+}
+
+.margin-top-lg {
+  margin-top: var(--spacing-lg);
+}
+
+.margin-bottom-xs {
+  margin-bottom: var(--spacing-xs);
+}
+
+.margin-bottom-sm {
+  margin-bottom: var(--spacing-sm);
+}
+
+.margin-bottom-md {
+  margin-bottom: var(--spacing-md);
+}
+
+.margin-bottom-lg {
+  margin-bottom: var(--spacing-lg);
+}
+
+/* Padding */
+.padding-xs {
+  padding: var(--spacing-xs);
+}
+
+.padding-sm {
+  padding: var(--spacing-sm);
+}
+
+.padding-md {
+  padding: var(--spacing-md);
+}
+
+.padding-lg {
+  padding: var(--spacing-lg);
+}
+
+/* Text Alignment */
+.text-center {
+  text-align: center;
+}
+
+.text-left {
+  text-align: left;
+}
+
+.text-right {
+  text-align: right;
+}
+
+/* Text Colors */
+.text-primary {
+  color: var(--primary-color);
+}
+
+.text-success {
+  color: var(--success-color);
+}
+
+.text-danger {
+  color: var(--danger-color);
+}
+
+.text-warning {
+  color: var(--warning-color);
+}
+
+.text-muted {
+  color: var(--medium-color);
+}
+
+/* Background Colors */
+.bg-primary {
+  background-color: var(--primary-color);
+}
+
+.bg-success {
+  background-color: var(--success-color);
+}
+
+.bg-danger {
+  background-color: var(--danger-color);
+}
+
+.bg-light {
+  background-color: var(--light-color);
+}
+
+.bg-white {
+  background-color: var(--white-color);
+}
+
+/* Display */
+.d-flex {
+  display: flex;
+}
+
+.d-grid {
+  display: grid;
+}
+
+.d-none {
+  display: none;
+}
+
+.d-block {
+  display: block;
+}
+
+.d-inline {
+  display: inline;
+}
+
+.d-inline-block {
+  display: inline-block;
+}
+
+/* Flexbox */
+.flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.flex-between {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.flex-column {
+  flex-direction: column;
+}
+
+.flex-wrap {
+  flex-wrap: wrap;
+}
+
+/* Gap */
+.gap-xs {
+  gap: var(--spacing-xs);
+}
+
+.gap-sm {
+  gap: var(--spacing-sm);
+}
+
+.gap-md {
+  gap: var(--spacing-md);
+}
+
+.gap-lg {
+  gap: var(--spacing-lg);
+}
+
+/* Border Radius */
+.rounded-sm {
+  border-radius: var(--border-radius-sm);
+}
+
+.rounded-md {
+  border-radius: var(--border-radius-md);
+}
+
+.rounded-lg {
+  border-radius: var(--border-radius-lg);
+}
+
+.rounded-full {
+  border-radius: var(--border-radius-full);
+}
+
+/* Shadow */
+.shadow-sm {
+  box-shadow: var(--shadow-sm);
+}
+
+.shadow-md {
+  box-shadow: var(--shadow-md);
+}
+
+.shadow-lg {
+  box-shadow: var(--shadow-lg);
+}
+
+.shadow-xl {
+  box-shadow: var(--shadow-xl);
+}
+
+/* Opacity */
+.opacity-50 {
+  opacity: 0.5;
+}
+
+.opacity-75 {
+  opacity: 0.75;
+}
+
+.opacity-100 {
+  opacity: 1;
+}
+
+/* Width */
+.w-full {
+  width: 100%;
+}
+
+.w-half {
+  width: 50%;
+}
+
+/* Height */
+.h-full {
+  height: 100%;
+}
+
+/* ============================================================================
+   6. COMPONENTES CUSTOMIZADOS
+   ============================================================================ */
+
+/* Card de Resumo (Meu Álbum) */
+.album-summary-card {
+  background: var(--gradient-primary);
+  color: var(--white-color);
+  border-radius: var(--border-radius-lg);
+  padding: var(--spacing-lg);
+  margin-bottom: var(--spacing-lg);
+  box-shadow: var(--shadow-lg);
+}
+
+.album-summary-card ion-card-title {
+  color: var(--white-color);
+}
+
+.album-summary-card p {
+  color: rgba(255, 255, 255, 0.9);
+  font-size: var(--font-size-lg);
+  margin-bottom: var(--spacing-md);
+}
+
+/* Sticker Card */
+.sticker-card {
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--border-radius-lg);
+  transition: all var(--transition-normal);
+}
+
+.sticker-card:hover {
+  transform: scale(1.02);
+  box-shadow: var(--shadow-xl);
+}
+
+.sticker-card ion-img {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+}
+
+.sticker-card ion-card-header {
+  padding: var(--spacing-md);
+}
+
+.sticker-card ion-card-title {
+  font-size: var(--font-size-base);
+  margin-bottom: var(--spacing-xs);
+}
+
+.sticker-card ion-card-subtitle {
+  font-size: var(--font-size-xs);
+}
+
+.sticker-card ion-card-content {
+  padding: var(--spacing-md);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+}
+
+.sticker-status {
+  display: inline-block;
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border-radius: var(--border-radius-full);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+}
+
+.sticker-status.collected {
+  background-color: var(--success-color);
+  color: var(--white-color);
+}
+
+.sticker-status.pending {
+  background-color: var(--danger-color);
+  color: var(--white-color);
+}
+
+/* Formulários */
+.form-group {
+  margin-bottom: var(--spacing-lg);
+}
+
+.form-group ion-label {
+  display: block;
+  margin-bottom: var(--spacing-sm);
+  font-weight: var(--font-weight-medium);
+}
+
+.form-group ion-input {
+  width: 100%;
+}
+
+.form-error {
+  color: var(--danger-color);
+  font-size: var(--font-size-xs);
+  margin-top: var(--spacing-xs);
+}
+
+.form-success {
+  color: var(--success-color);
+  font-size: var(--font-size-xs);
+  margin-top: var(--spacing-xs);
+}
+
+/* Login/Cadastro Card */
+.auth-card {
+  max-width: 400px;
+  margin: var(--spacing-xl) auto;
+  background: var(--white-color);
+  border-radius: var(--border-radius-lg);
+  box-shadow: var(--shadow-lg);
+  padding: var(--spacing-lg);
+}
+
+.auth-card ion-card-title {
+  text-align: center;
+  margin-bottom: var(--spacing-lg);
+}
+
+.auth-button-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+  margin-top: var(--spacing-lg);
+}
+
+.auth-link {
+  text-align: center;
+  margin-top: var(--spacing-md);
+  font-size: var(--font-size-sm);
+}
+
+.auth-link a {
+  color: var(--primary-color);
+  font-weight: var(--font-weight-medium);
+}
+
+/* Contato List */
+.contact-item {
+  background: var(--white-color);
+  border-radius: var(--border-radius-md);
+  padding: var(--spacing-md);
+  margin-bottom: var(--spacing-md);
+  box-shadow: var(--shadow-sm);
+  transition: all var(--transition-fast);
+}
+
+.contact-item:hover {
+  box-shadow: var(--shadow-md);
+}
+
+.contact-item-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-sm);
+}
+
+.contact-item-name {
+  font-weight: var(--font-weight-bold);
+  font-size: var(--font-size-base);
+}
+
+.contact-item-details {
+  font-size: var(--font-size-sm);
+  color: var(--medium-color);
+  margin-top: var(--spacing-xs);
+}
+
+.contact-item-actions {
+  display: flex;
+  gap: var(--spacing-sm);
+  margin-top: var(--spacing-md);
+}
+
+.contact-item-actions ion-button {
+  flex: 1;
+  margin: 0;
+}
+
+.empty-state {
+  text-align: center;
+  padding: var(--spacing-2xl) var(--spacing-lg);
+  color: var(--medium-color);
+}
+
+.empty-state-icon {
+  font-size: 48px;
+  margin-bottom: var(--spacing-md);
+  opacity: 0.5;
+}
+
+.empty-state-text {
+  font-size: var(--font-size-lg);
+  margin-bottom: var(--spacing-md);
+}
+
+/* ============================================================================
+   7. RESPONSIVIDADE
+   ============================================================================ */
+
+/* Mobile (até 576px) */
+@media (max-width: 576px) {
+  :root {
+    --font-size-base: 14px;
+    --spacing-lg: 16px;
+  }
+
+  h1 {
+    font-size: 24px;
+  }
+
+  h2 {
+    font-size: 20px;
+  }
+
+  h3 {
+    font-size: 18px;
+  }
+
+  ion-toolbar {
+    padding: var(--spacing-md);
+    min-height: 48px;
+  }
+
+  ion-title {
+    font-size: var(--font-size-lg);
+  }
+
+  ion-card-header {
+    padding: var(--spacing-md);
+  }
+
+  ion-card-content {
+    padding: var(--spacing-md);
+  }
+
+  .auth-card {
+    margin: var(--spacing-lg) auto;
+    padding: var(--spacing-md);
+  }
+
+  .sticker-card ion-img {
+    height: 150px;
+  }
+}
+
+/* Tablet (576px até 768px) */
+@media (min-width: 576px) and (max-width: 768px) {
+  :root {
+    --font-size-base: 15px;
+  }
+
+  .auth-card {
+    max-width: 350px;
+  }
+}
+
+/* Desktop (acima de 768px) */
+@media (min-width: 768px) {
+  ion-content.ion-padding {
+    padding: var(--spacing-xl);
+  }
+
+  .auth-card {
+    max-width: 450px;
+  }
+}
+
+/* ============================================================================
+   8. ANIMAÇÕES
+   ============================================================================ */
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideInUp {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideInDown {
+  from {
+    transform: translateY(-20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes pulse {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+.fade-in {
+  animation: fadeIn var(--transition-normal);
+}
+
+.slide-in-up {
+  animation: slideInUp var(--transition-normal);
+}
+
+.slide-in-down {
+  animation: slideInDown var(--transition-normal);
+}
+
+.pulse {
+  animation: pulse var(--transition-slow) infinite;
+}
+
+/* ============================================================================
+   9. ACESSIBILIDADE
+   ============================================================================ */
+
+/* Focus Visible */
+button:focus-visible,
+a:focus-visible,
+ion-button:focus-visible,
+ion-input:focus-visible {
+  outline: 2px solid var(--primary-color);
+  outline-offset: 2px;
+}
+
+/* Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* High Contrast */
+@media (prefers-contrast: more) {
+  ion-card {
+    border: 1px solid var(--dark-color);
+  }
+
+  ion-button {
+    border: 1px solid currentColor;
+  }
+}
+
+/* Dark Mode (se suportado) */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --dark-color: #f4f5f8;
+    --light-color: #222428;
+    --white-color: #1a1a1a;
+    --medium-color: #989aa2;
+  }
+
+  html,
+  body {
+    background-color: var(--white-color);
+    color: var(--dark-color);
+  }
+
+  ion-header,
+  ion-toolbar {
+    --background: var(--white-color);
+  }
+
+  ion-content {
+    --background: var(--light-color);
+  }
+
+  ion-card {
+    --background: var(--white-color);
+  }
+
+  ion-card-header {
+    background-color: var(--light-color);
+  }
+}

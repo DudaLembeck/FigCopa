@@ -1,49 +1,119 @@
-import { ref } from 'vue';
-import { listarFigurinhas, atualizarStatusFigurinha, toggleFavorite, listarFigurinhasFavoritas, listarUltimasFigurinhasColetadas } from '@/services/database';
+import {
+  ref,
+  computed,
+  onMounted
+} from "vue"
 
-export interface Figura {
-  id: number
-  nome: string
-  img: string
-  coletada: number 
-  favorite: number
-  collected_at: string | null
-  tipo: string
-}
+import {
+  listJogadores,
+  toggleFigurinha
+} from "@/services/database"
 
-const figuras = ref<Figura[]>([]);
+import {
+  usuarioLogado
+} from "@/composables/useAuth"
 
 export function useAlbum() {
 
-  async function carregarFigurinhas() {
-    const resultado = await listarFigurinhas();
-    figuras.value = resultado as Figura[];
+  const stickers = ref<any[]>([])
+
+  const pesquisa = ref("")
+
+  const filtro = ref("todas")
+
+  async function carregarAlbum() {
+
+    if (!usuarioLogado.value) {
+      return
+    }
+
+    stickers.value =
+      await listJogadores(
+        usuarioLogado.value.id
+      )
+
   }
 
-  async function alterarStatus(id: number, coletada: boolean) {
-    const novoStatus = coletada ? 1 : 0;
+  async function marcarColetada(id: number) {
+    if (!usuarioLogado.value) return;
 
-    await atualizarStatusFigurinha(id, novoStatus);
-    await carregarFigurinhas();
+    const figurinha = stickers.value.find(sticker => sticker.id === id);
+    if (!figurinha) return;
+
+    await toggleFigurinha(usuarioLogado.value.id, id);
+    
+    // Atualiza o estado local
+    figurinha.coletada = figurinha.coletada ? 0 : 1;
   }
 
-  async function alternarFavorito(id: number, favorite: boolean) {
-    const novoStatus = favorite ? 1 : 0;
-    await toggleFavorite(id, novoStatus);
-    await carregarFigurinhas();
-  }
+  const stickersFiltradas = computed(() => {
 
-  async function carregarFigurinhasFavoritas() {
-    const resultado = await listarFigurinhasFavoritas();
-    figuras.value = resultado as Figura[];
-  }
+    let resultado = stickers.value
+
+    if (pesquisa.value) {
+
+      resultado = resultado.filter(sticker =>
+
+        sticker.nome
+          .toLowerCase()
+          .includes(
+            pesquisa.value.toLowerCase()
+          ) ||
+
+        sticker.selecao
+          .toLowerCase()
+          .includes(
+            pesquisa.value.toLowerCase()
+          )
+
+      )
+
+    }
+
+    if (filtro.value === "coletadas") {
+
+      resultado =
+        resultado.filter(
+          sticker => sticker.coletada
+        )
+
+    }
+
+    if (filtro.value === "pendentes") {
+
+      resultado =
+        resultado.filter(
+          sticker => !sticker.coletada
+        )
+
+    }
+
+    return resultado
+
+  })
+
+  const totalFigurinhas = computed(() =>
+    stickers.value.length
+  )
+
+  const totalColetadas = computed(() =>
+    stickers.value.filter(
+      sticker => Boolean(sticker.coletada)
+    ).length
+  )
+
+  onMounted(() => {
+    carregarAlbum()
+  })
 
   return {
-    figuras,
-    carregarFigurinhas,
-    alterarStatus,
-    alternarFavorito,
-    carregarFigurinhasFavoritas,
-    listarUltimasFigurinhasColetadas
+    pesquisa,
+    filtro,
+    marcarColetada,
+    stickersFiltradas,
+    totalFigurinhas,
+    totalColetadas,
+    carregarAlbum
   }
+
 }

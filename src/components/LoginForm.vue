@@ -1,68 +1,76 @@
 <template>
-  <ion-list>
-    <ion-item>
-      <ion-label>Cadastro</ion-label>
-    </ion-item>
+  <ion-card class="auth-card">
+    <ion-card-header>
+      <ion-card-title>Entrar</ion-card-title>
+    </ion-card-header>
 
-    <ion-item>
-      <ion-label position="stacked">Email</ion-label>
-      <ion-input type="email" v-model="form.email" required />
-    </ion-item>
-    <ion-note color="danger" v-if="errors.email">{{ errors.email }}</ion-note>
+    <ion-card-content>
+      <div class="form-group">
+        <ion-input
+          label="E-mail"
+          label-placement="floating"
+          type="email"
+          v-model="email"
+        />
+      </div>
 
-    <ion-item>
-      <ion-label position="stacked">Senha</ion-label>
-      <ion-input type="password" v-model="form.senha" />
-    </ion-item>
-        <ion-note color="danger" v-if="errors.senha">{{ errors.senha }}</ion-note>
+      <div class="form-group">
+        <ion-input
+          label="Senha"
+          label-placement="floating"
+          type="password"
+          v-model="senha"
+        />
+      </div>
 
-    <ion-button expand="block" type="button" @click="entrar">Entrar</ion-button>
+      <ion-button expand="block" class="ion-margin-top" @click="fazerLogin">
+        Entrar
+      </ion-button>
 
-    <ion-toast :is-open="toast.show" :message="toast.message" duration="2000" @ionDismiss="toast.show = false" />
-  </ion-list>
+      <ion-text color="danger" v-if="erro" class="form-error">
+        <p>{{ erro }}</p>
+      </ion-text>
+    </ion-card-content>
+  </ion-card>
 </template>
 
 <script setup lang="ts">
-import { IonList, IonItem, IonLabel, IonInput, IonNote, IonButton, IonToast } from '@ionic/vue'
-import { reactive } from 'vue'
-import { loginUsuario } from '@/services/database'
+import { ref } from 'vue'
 import { useRouter } from 'vue-router'
+import {
+  IonCard,
+  IonCardHeader,
+  IonCardTitle,
+  IonCardContent,
+  IonInput,
+  IonButton,
+  IonText
+} from '@ionic/vue'
+import { useAuth } from '@/composables/useAuth'
 
 const router = useRouter()
+const { login } = useAuth()
 
-const form = reactive({
-  email: '',
-  senha: ''
-})
-
-const toast = reactive({
-  show: false,
-  message: ''
-})
-
-const errors = reactive({
-  email: '',
-  senha: ''
-})
+const email = ref('')
+const senha = ref('')
+const erro = ref('')
 
 
-
-async function entrar() {
-  if (!form.email || !form.senha) {
-    alert('Preencha todos os campos!')
+async function fazerLogin() {
+  erro.value = ''
+  if (!email.value || !senha.value) {
+    erro.value = 'Preencha todos os campos.'
     return
   }
 
-  const usuario = await loginUsuario(form.email, form.senha)
+  const resultado = await login(email.value, senha.value)
+  console.log('Resultado do login:', resultado)
 
-  if (!usuario) {
-    alert('E-mail ou senha inválidos!')
+  if (!resultado.sucesso) {
+    erro.value = resultado.mensagem
     return
   }
 
-  localStorage.setItem('logado', 'true')
-  localStorage.setItem('usuario', JSON.stringify(usuario))
-
-  router.push('/tabs/tab1')
+  router.push('/pages/album')
 }
 </script>

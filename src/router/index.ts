@@ -1,82 +1,162 @@
-import { createRouter, createWebHistory } from '@ionic/vue-router';
-import { RouteRecordRaw } from 'vue-router';
-import TabsPage from '../views/TabsPage.vue';
+import {
+  createRouter,
+  createWebHistory
+} from "@ionic/vue-router"
 
-const routes: Array<RouteRecordRaw> = [
+import {
+  RouteRecordRaw
+} from "vue-router"
+
+import TabsPage
+from "../views/TabsPage.vue"
+
+import {
+  usuarioLogado
+} from "@/composables/useAuth.js"
+
+const routes:
+Array<RouteRecordRaw> = [
+
   {
-    path: '/',
-    redirect: '/login'
+    path: "/",
+    redirect: "/login"
   },
+
   {
-    path: '/login',
-    component: () => import('@/views/LoginPage.vue')
+    path: "/cadastro",
+    component: () =>
+      import(
+        "@/views/CadastroPage.vue"
+      ),
+
+    meta: {
+      public: true
+    }
   },
+
   {
-    path: '/cadastro',
-    component: () => import('@/views/CadastroPage.vue')
+    path: "/login",
+    component: () =>
+      import(
+        "@/views/LoginPage.vue"
+      ),
+
+    meta: {
+      public: true
+    }
   },
-    {
-    path: '/recuperar',
-    component: () => import('@/views/RecuperarPage.vue')
-  },
+
   {
-    path: '/tabs/',
+    path: "/resetpass",
+    component: () =>
+      import(
+        "@/views/ResetPassPage.vue"
+      ),
+
+    meta: {
+      public: true
+    }
+  },
+
+  {
+    path: "/pages/",
     component: TabsPage,
+
     children: [
       {
-        path: '',
-        redirect: '/tabs/tab1'
+        path: "",
+        redirect:
+          "/pages/album"
+      },
+
+      {
+        path: "termos",
+        component: () =>
+          import(
+            "@/views/SobrePage.vue"
+          )
+      },
+
+      {
+        path: "album",
+        component: () =>
+          import(
+            "@/views/AlbumPage.vue"
+          )
+      },
+
+      {
+        path: "perfil",
+        component: () =>
+          import(
+            "@/views/PerfilPage.vue"
+          )
       },
       {
-        path: 'tab1',
-        component: () => import('@/views/StatisticsPage.vue')
+        path: "conquistas",
+        component: () =>
+          import(
+            "@/views/ConquistasPage.vue"
+          )
       },
+
       {
-        path: 'tab2',
-        component: () => import('@/views/Tab2Page.vue')
+        path: "contato-cadastro",
+        component: () =>
+          import(
+            "@/views/ContatoCadastroPage.vue"
+          )
       },
+
       {
-        path: 'tab3',
-        component: () => import('@/views/Tab3Page.vue')
-      },
-      {
-        path: 'tab4',
-        component: () => import('@/views/FavoritesPage.vue')
-      },
-      {
-        path: 'conquistas',
-        component: () => import('@/views/ConquistasPage.vue')
-      },
-      {
-        path: 'historico',
-        component: () => import('@/views/HistoryPage.vue')
+        path: "contato-lista",
+        component: () =>
+          import(
+            "@/views/ContatoListPage.vue"
+          )
       }
     ]
   }
-];
+]
 
 const router = createRouter({
-  history: createWebHistory(import.meta.env.BASE_URL),
+  history: createWebHistory(
+    import.meta.env.BASE_URL
+  ),
+
   routes
-});
+})
 
+router.beforeEach(
+  (to, from, next) => {
 
-router.beforeEach((to, from, next) => {
-  const logado = localStorage.getItem('logado');
+    const rotaPublica =
+      to.meta.public
 
-  if (
-    to.path === '/login' ||
-    to.path === '/cadastro' ||
-    to.path === '/recuperar'
-  ) {
-    next();
+    const logado =
+      !!usuarioLogado.value
+
+    if (
+      !rotaPublica &&
+      !logado
+    ) {
+      return next("/login")
+    }
+
+    if (
+      logado &&
+      (
+        to.path === "/login" ||
+        to.path === "/cadastro"
+      )
+    ) {
+      return next(
+        "/pages/album"
+      )
+    }
+
+    next()
   }
-  else if (logado === 'true') {
-    next();
-  }
-  else {
-    next('/login');
-  }
-});
+)
 
-export default router;
+export default router
