@@ -59,6 +59,29 @@ Array<RouteRecordRaw> = [
   },
 
   {
+    path: "/termos",
+    component: () =>
+      import(
+        "@/views/TermosPage.vue"
+      ),
+
+    meta: {
+      public: true
+    }
+  },
+   {
+    path: "/politica",
+    component: () =>
+      import(
+        "@/views/PoliticaPage.vue"
+      ),
+
+    meta: {
+      public: true
+    }
+  },
+
+  {
     path: "/pages/",
     component: TabsPage,
 

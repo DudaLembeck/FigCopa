@@ -8,9 +8,7 @@
     <ion-content class="ion-padding">
 
       <ion-card class="album-summary-card">
-        <ion-card-header>
           <ion-card-title>Meu Álbum</ion-card-title>
-        </ion-card-header>
         <ion-card-content>
           <p>Total de figurinhas: <strong>{{ totalFigurinhas }}</strong></p>
           <p>Coletadas: <strong>{{ totalColetadas }}</strong></p>
@@ -61,7 +59,6 @@ import {
   IonPage,
   IonContent,
   IonCard,
-  IonCardHeader,
   IonCardTitle,
   IonCardContent,
   IonSearchbar,

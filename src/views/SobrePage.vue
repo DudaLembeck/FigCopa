@@ -23,7 +23,7 @@
 
         <ion-item
           button
-          href="https://github.com/mario2230/Termos-de-Uso/tree/main"
+          @click="termos"
           target="_blank"
         >
           <ion-icon
@@ -38,7 +38,7 @@
 
         <ion-item
           button
-          href="https://github.com/mario2230/Politica-de-privacidade"
+          href=""
           target="_blank"
         >
           <ion-icon
@@ -77,6 +77,9 @@ import {
   shieldCheckmarkOutline
 } from "ionicons/icons"
 
+import { useRouter } from 'vue-router'
+const router = useRouter()
+function termos() { router.push('/termos') }
 import AppHeader
 from "@/components/AppHeader.vue"
 </script>

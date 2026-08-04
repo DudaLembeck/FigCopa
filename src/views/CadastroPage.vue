@@ -35,12 +35,7 @@ import {
 
 import AppHeader from "@/components/AppHeader.vue"
 import RegisterForm from "@/components/RegisterForm.vue"
-
-import {
-  addUsuario,
-  listUsuarios
-} from "@/services/database"
-
+import { useAuth } from '@/composables/useAuth'
 const router = useRouter()
 
 const mostrarToast = ref(false)
