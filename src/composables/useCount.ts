@@ -1,20 +1,12 @@
-export interface Figura {
-  id: number
-  jogador: string
-  posicao: string
-  img: string
-  status: string
+import { computed } from 'vue'
+import { useAlbum } from '@/composables/useAlbum'
+
+export function ContarFig() {
+  const { figuras } = useAlbum()
+  return computed(() => figuras.value.length)
 }
 
-
-import data from '@/data/data.json'
-
-export function ContarFig(): number {
-    return data.figuras.length
-}
-
-export function ContarColetadas(): number {
-  return data.figuras.filter(
-    figura => figura.status === 'Coletada'
-  ).length
+export function ContarColetadas() {
+  const { figuras } = useAlbum()
+  return computed(() => figuras.value.filter(f => f.coletada === 1).length)
 }

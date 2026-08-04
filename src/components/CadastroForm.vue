@@ -1,7 +1,7 @@
 <template>
   <ion-list>
     <ion-item>
-      <ion-label>Cadastro de Contato</ion-label>
+      <ion-label>Cadastro</ion-label>
     </ion-item>
 
     <ion-item>
@@ -17,11 +17,12 @@
     <ion-note color="danger" v-if="errors.email">{{ errors.email }}</ion-note>
 
     <ion-item>
-      <ion-label position="stacked">Telefone</ion-label>
-      <ion-input type="tel" v-model="form.telefone" />
+      <ion-label position="stacked">Senha</ion-label>
+      <ion-input type="password" v-model="form.senha" />
     </ion-item>
+        <ion-note color="danger" v-if="errors.senha">{{ errors.senha }}</ion-note>
 
-    <ion-button expand="block" type="button" @click="salvarContato">Salvar</ion-button>
+    <ion-button expand="block" type="button" @click="salvarUsuario">Salvar</ion-button>
 
     <ion-toast :is-open="toast.show" :message="toast.message" duration="2000" @ionDismiss="toast.show = false" />
   </ion-list>
@@ -30,12 +31,12 @@
 <script setup lang="ts">
 import { IonList, IonItem, IonLabel, IonInput, IonNote, IonButton, IonToast } from '@ionic/vue'
 import { reactive } from 'vue'
-import { addContato } from '@/services/database'
+import { addUsuario } from '@/services/database'
 
 const form = reactive({
   nome: '',
   email: '',
-  telefone: ''
+  senha: ''
 })
 
 const toast = reactive({
@@ -45,19 +46,21 @@ const toast = reactive({
 
 const errors = reactive({
   nome: '',
-  email: ''
+  email: '',
+  senha: ''
 })
 
 function clearErrors() {
   errors.nome = ''
   errors.email = ''
+  errors.senha = ''
 }
 
-async function salvarContato() {
+async function salvarUsuario() {
   clearErrors()
 
 
-  if (!form.nome || !form.email) {
+  if (!form.nome || !form.email || !form.senha) {
     if (!form.nome) {
       errors.nome = 'Nome é obrigatório.'
     }
@@ -66,18 +69,23 @@ async function salvarContato() {
       errors.email = 'Email é obrigatório.'
     } 
 
+    
+    if (!form.senha) {
+      errors.senha = 'Senha é obrigatória.'
+    } 
+
     toast.show = true
     toast.message = 'Preencha os campos obrigatórios.'
     return
   } 
 
-  await addContato(form.nome, form.email, form.telefone)
+  await addUsuario(form.nome, form.email, form.senha)
 
   form.nome = ''
   form.email = ''
-  form.telefone = ''
+  form.senha = ''
   toast.show = true
-  toast.message = 'Contato salvo com sucesso.'
-  window.dispatchEvent(new CustomEvent('contato-salvo'))
+  toast.message = 'Login salvo com sucesso.'
+  window.dispatchEvent(new CustomEvent('login-salvo'))
 }
 </script>

@@ -61,7 +61,7 @@ function enviar() {
 .custom-input {
   margin-bottom: 18px;
   --border-radius: 8px;
-  --highlight-color-focused: #3880ff; 
+  --highlight-color-focused: #d34cee; 
 }
 
 h2 {

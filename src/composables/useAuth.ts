@@ -1,43 +1,110 @@
-import { ref } from 'vue'
+import { ref } from "vue";
 
-interface Usuario{
-    nome:string
-    email:string
-    senha:string
+import {
+  addUsuario,
+  realizarLogin
+} from "@/services/database";
+
+export const usuarioLogado = ref<any | null>(null);
+
+export function useAuth() {
+
+
+async function login(email: string, senha: string) {
+  try {
+    const emailNormalizado = email.trim().toLowerCase()
+    console.log('Tentando login com email:', emailNormalizado)
+
+    const usuarios = await realizarLogin(emailNormalizado, senha)
+
+    if (usuarios && usuarios.length > 0) {
+      usuarioLogado.value = usuarios[0]
+      console.log('Login bem-sucedido:', usuarioLogado.value)
+      return {
+        sucesso: true,
+        mensagem: 'Login realizado com sucesso!'
+      }
+    } else {
+      console.warn('Nenhum usuário encontrado para', emailNormalizado)
+      return {
+        sucesso: false,
+        mensagem: 'E-mail ou senha inválidos'
+      }
+    }
+  } catch (erro) {
+    console.error('Erro no login:', erro)
+    return {
+      sucesso: false,
+      mensagem: 'Erro ao tentar fazer login. Tente novamente mais tarde.'
+    }
+  }
 }
 
-const usuarios = ref<Usuario[]>([])
+  async function cadastrar(
+    nome: string,
+    email: string,
+    senha: string
+  ) {
 
-export function useAuth(){
-
-    function cadastrar(nome:string,email:string,senha:string){
-        usuarios.value.push({
-            nome,
-            email,
-            senha
-        })
+    // Validação de senha simplificada para facilitar o uso, mas garantindo o mínimo
+    if (senha.length < 6) {
+      return {
+        sucesso: false,
+        mensagem: "A senha deve ter pelo menos 6 caracteres."
+      };
     }
 
-    function login(email:string,senha:string){
+    try {
+      console.log('Tentando cadastrar usuário:', email);
+      await addUsuario(
+        nome,
+        email.trim().toLowerCase(),
+        senha
+      );
 
-        return usuarios.value.find(
-            usuario =>
-            usuario.email === email &&
-            usuario.senha === senha
-        )
+      return {
+        sucesso: true,
+        mensagem: "Cadastro realizado com sucesso!"
+      };
+    } catch (error: any) {
+      console.error('Erro ao cadastrar usuário:', error);
+      return {
+        sucesso: false,
+        mensagem: error.message || "Erro ao cadastrar. Tente novamente."
+      };
     }
 
-    function resetarSenha(email:string){
+  }
 
-        return usuarios.value.find(
-            usuario => usuario.email === email
-        )
-    }
+  function logout() {
 
-    return{
-        cadastrar,
-        login,
-        resetarSenha
-    }
+    usuarioLogado.value = null;
+
+  }
+
+  async function resetarSenha(
+    email: string
+  ) {
+
+    return {
+      sucesso: true,
+      mensagem: "Link enviado para " + email
+    };
+
+  }
+
+  return {
+
+    usuarioLogado,
+
+    login,
+
+    cadastrar,
+
+    logout,
+
+    resetarSenha
+
+  };
 
 }

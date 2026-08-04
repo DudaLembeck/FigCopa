@@ -1,103 +1,69 @@
 <template>
-  
   <ion-page>
-    <ion-header>
-  <ion-toolbar>
-    <ion-buttons slot="start">
-      <ion-back-button default-href="/login"></ion-back-button>
-    </ion-buttons>
-  </ion-toolbar>
-</ion-header>
-    <ion-content class="ion-padding label-container">
-      <div class="login-container">
-        <h2>Criar Conta</h2>
-        
-        <ion-item fill="outline" mode="md" class="custom-input" >
-          <ion-input 
-            label="Nome" 
-            label-placement="floating" 
-            type="text" 
-            placeholder="Digite seu nome completo"
-            v-model="CampoNome"
-          ></ion-input>
-        </ion-item>
+    <AppHeader titulo="Cadastro" />
 
-        <ion-item fill="outline" mode="md" class="custom-input">
-          <ion-input 
-            label="E-mail" 
-            label-placement="floating" 
-            type="email" 
-            placeholder="email@exemplo.com"
-            v-model="CampoEmail"
-          ></ion-input>
-        </ion-item>
+    <ion-content class="ion-padding">
 
-        <ion-item fill="outline" mode="md" class="custom-input">
-          <ion-input 
-            label="Senha" 
-            label-placement="floating" 
-            type="password" 
-            placeholder="Digite sua senha"
-            v-model="CampoSenha"
-          ></ion-input>
-        </ion-item>
+      <RegisterForm @register="realizarCadastro" />
 
-        <ion-button expand="block" class="submit-btn" @click="Clicou">
-          Enviar
-        </ion-button>
-      </div>
+      <ion-button expand="block" fill="clear" @click="voltarLogin">
+        Voltar ao Login
+      </ion-button>
+
+      <ion-text color="danger" v-if="mensagem">
+        <p>{{ mensagem }}</p>
+      </ion-text>
+
+      <ion-toast :is-open="mostrarToast" :message="mensagemToast" duration="2000" @didDismiss="
+        mostrarToast = false
+        " />
     </ion-content>
   </ion-page>
 </template>
 
 <script setup lang="ts">
-import { IonPage, IonContent, IonItem, IonInput, IonButtons, IonBackButton, IonButton, IonToolbar, IonHeader } from '@ionic/vue';
-import { cadastrar } from '@/composables/useUsers';
-import { ref } from 'vue';
+import { ref } from "vue"
+import { useRouter } from "vue-router"
 
-const CampoNome = ref('');
-const CampoSenha = ref('');
-const CampoEmail = ref('');
+import {
+  IonPage,
+  IonContent,
+  IonButton,
+  IonText,
+  IonToast
+} from "@ionic/vue"
 
-function Clicou() {
-  cadastrar(
-    CampoNome.value,
-    CampoSenha.value,
-    CampoEmail.value
-  );
+import AppHeader from "@/components/AppHeader.vue"
+import RegisterForm from "@/components/RegisterForm.vue"
+import { useAuth } from '@/composables/useAuth'
+const router = useRouter()
 
-  CampoNome.value = '';
-  CampoSenha.value = '';
-  CampoEmail.value = '';
+const mostrarToast = ref(false)
+const mensagemToast = ref("")
+const mensagem = ref("")
+
+async function realizarCadastro(nome: string, email: string, senha: string) {
+  mensagem.value = "";
+  
+  const { cadastrar } = useAuth();
+  const resultado = await cadastrar(nome, email, senha);
+
+  if (!resultado.sucesso) {
+    mensagem.value = resultado.mensagem;
+    mensagemToast.value = resultado.mensagem;
+    mostrarToast.value = true;
+    return;
+  }
+
+  mensagemToast.value = "Cadastro realizado com sucesso!";
+  mostrarToast.value = true;
+
+  setTimeout(() => {
+    router.push("/login");
+  }, 1500);
+}
+
+function voltarLogin() {
+  router.push("/login")
 }
 </script>
-
-<style scoped>
-.label-container {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-
-h2 {
-  text-align: center;
-  margin-bottom: 24px;
-  color: #ffffff;
-  font-weight: 600;
-}
-
-/* Espaçamento entre os inputs */
-.custom-input {
-  margin-bottom: 18px;
-  --border-radius: 8px;
-  --highlight-color-focused: #3880ff; /* Cor da borda ao focar */
-}
-
-/* Estilização do botão */
-.submit-btn {
-  margin-top: 24px;
-  --border-radius: 8px;
-  font-weight: 500;
-}
-</style>
